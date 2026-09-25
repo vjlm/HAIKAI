@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Volume2, VolumeX, Menu, X, ShieldAlert, BookOpen } from 'lucide-react';
 import { soundManager } from '../utils/audio';
+import { HaikaiLogo } from './HaikaiLogo';
 
 interface NavigationProps {
   onOpenSpoilerModal: () => void;
@@ -87,19 +88,17 @@ export const Navigation: React.FC<NavigationProps> = ({
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-10 flex items-center justify-between">
-          {/* Zone 1: Single text element wordmark */}
+          {/* Zone 1: Brand wordmark: Japanese Kanji + Cinematic English Logo */}
           <a
             href="#"
-            className="flex items-center gap-2 group transition-opacity hover:opacity-85 py-1 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#9e2a2b]"
+            className="flex items-center gap-2.5 sm:gap-3 group transition-opacity hover:opacity-90 py-1 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#9e2a2b]"
             aria-label="HAIKAI — Home"
           >
-            <span className="font-jp text-lg sm:text-xl tracking-widest text-[#e8ebed] font-medium">
+            <span className="font-jp text-lg sm:text-xl tracking-widest text-[#e8ebed] font-medium shrink-0">
               灰海
             </span>
-            <span className="h-3 w-[1px] bg-[#333d4b]" />
-            <span className="font-cinzel text-sm sm:text-base tracking-[0.28em] text-[#d4d9de] font-semibold whitespace-nowrap">
-              HAIKAI
-            </span>
+            <span className="h-4 w-[1px] bg-[#333d4b] shrink-0" />
+            <HaikaiLogo className="h-5 sm:h-6 w-24 sm:w-28 md:w-32 transition-transform duration-300 group-hover:scale-105 shrink-0" />
           </a>
 
           {/* Zone 2: 4-8 clean text navigation links */}
@@ -182,9 +181,10 @@ export const Navigation: React.FC<NavigationProps> = ({
         >
           {/* Header row */}
           <div className="flex items-center justify-between border-b border-[#1b232e] pb-4">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2.5">
               <span className="font-jp text-xl tracking-widest text-[#e8ebed]">灰海</span>
-              <span className="font-cinzel text-sm tracking-[0.25em] text-[#9aa3ae]">HAIKAI</span>
+              <span className="h-4 w-[1px] bg-[#333d4b]" />
+              <HaikaiLogo className="h-5 w-24" />
             </div>
 
             <button

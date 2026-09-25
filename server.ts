@@ -8,7 +8,11 @@ import { getDatabase } from './server/db';
 
 dotenv.config();
 
-const PORT = parseInt(process.env.PORT || '3000', 10);
+const PORT = parseInt(
+  process.env.DEFAULT_APP_PORT ||
+  (process.env.PORT && process.env.PORT !== '8080' ? process.env.PORT : '3000'),
+  10
+);
 const isProduction = process.env.NODE_ENV === 'production';
 
 async function createServer() {

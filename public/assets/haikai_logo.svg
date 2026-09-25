@@ -1,0 +1,128 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 280" width="100%" height="100%" fill="none">
+  <defs>
+    <!-- Weathered Stone Ivory Gradient -->
+    <linearGradient id="ivoryStone" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f5f7fa" />
+      <stop offset="45%" stop-color="#dde2e8" />
+      <stop offset="50%" stop-color="#b8c2cd" />
+      <stop offset="55%" stop-color="#e2e7ec" />
+      <stop offset="100%" stop-color="#cbd3dc" />
+    </linearGradient>
+
+    <!-- Deep Crimson Blood Stained Gradient for the central I -->
+    <linearGradient id="bloodCrimson" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#b8262a" />
+      <stop offset="35%" stop-color="#8a1417" />
+      <stop offset="50%" stop-color="#5a0b0d" />
+      <stop offset="70%" stop-color="#991b1f" />
+      <stop offset="100%" stop-color="#6e1013" />
+    </linearGradient>
+
+    <!-- Partial Crimson Gradient for the right leg of second A -->
+    <linearGradient id="bloodSplatterA" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#dde2e8" />
+      <stop offset="55%" stop-color="#c5cbd4" />
+      <stop offset="65%" stop-color="#8a1417" />
+      <stop offset="85%" stop-color="#b8262a" />
+      <stop offset="100%" stop-color="#700f12" />
+    </linearGradient>
+
+    <!-- Razor Blade Steel Horizon Gradient -->
+    <linearGradient id="steelBlade" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#3a4756" stop-opacity="0" />
+      <stop offset="5%" stop-color="#7e8c9d" stop-opacity="0.4" />
+      <stop offset="15%" stop-color="#c8d2dc" />
+      <stop offset="50%" stop-color="#ffffff" />
+      <stop offset="85%" stop-color="#c8d2dc" />
+      <stop offset="95%" stop-color="#7e8c9d" stop-opacity="0.4" />
+      <stop offset="100%" stop-color="#3a4756" stop-opacity="0" />
+    </linearGradient>
+
+    <!-- Blade Glow -->
+    <filter id="bladeGlow" x="-10%" y="-50%" width="120%" height="200%">
+      <feGaussianBlur stdDeviation="1.5" result="glow" />
+      <feMerge>
+        <feMergeNode in="glow" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+
+    <!-- Distressed Weathering Filter -->
+    <filter id="distressedGrunge" x="0%" y="0%" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="4" result="noise" />
+      <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.25 0" in="noise" result="coloredNoise" />
+      <feComposite operator="in" in="coloredNoise" in2="SourceGraphic" result="textured" />
+      <feBlend mode="multiply" in="textured" in2="SourceGraphic" />
+    </filter>
+  </defs>
+
+  <style>
+    .serif-letter {
+      font-family: 'Cinzel', 'Trajan Pro', 'Baskerville', 'Times New Roman', serif;
+      font-weight: 700;
+      font-size: 172px;
+      letter-spacing: 0.08em;
+      text-anchor: middle;
+      dominant-baseline: central;
+    }
+  </style>
+
+  <!-- Group with distressed subtle shadow -->
+  <g filter="url(#distressedGrunge)">
+    <!-- Base Letters Drop Shadow -->
+    <g fill="#000000" opacity="0.45" transform="translate(2, 3)">
+      <text x="175" y="140" class="serif-letter">H</text>
+      <text x="350" y="140" class="serif-letter">A</text>
+      <text x="490" y="140" class="serif-letter">I</text>
+      <text x="635" y="140" class="serif-letter">K</text>
+      <text x="815" y="140" class="serif-letter">A</text>
+      <text x="965" y="140" class="serif-letter">I</text>
+    </g>
+
+    <!-- Letter: H (Ivory weathered stone) -->
+    <text x="175" y="140" class="serif-letter" fill="url(#ivoryStone)">H</text>
+
+    <!-- Letter: A (Ivory weathered stone) -->
+    <text x="350" y="140" class="serif-letter" fill="url(#ivoryStone)">A</text>
+
+    <!-- Letter: I (Crimson blood-soaked) -->
+    <text x="490" y="140" class="serif-letter" fill="url(#bloodCrimson)">I</text>
+
+    <!-- Letter: K (Ivory weathered stone) -->
+    <text x="635" y="140" class="serif-letter" fill="url(#ivoryStone)">K</text>
+
+    <!-- Letter: A (Ivory with blood crimson stained right flank) -->
+    <text x="815" y="140" class="serif-letter" fill="url(#bloodSplatterA)">A</text>
+
+    <!-- Letter: I (Ivory weathered stone) -->
+    <text x="965" y="140" class="serif-letter" fill="url(#ivoryStone)">I</text>
+  </g>
+
+  <!-- Continuous Razor Horizon Blade Piercing Horizontal Center -->
+  <!-- 1. Dark incision shadow seam -->
+  <path d="M 30 142.5 L 1170 142.5" stroke="#000000" stroke-width="2.5" opacity="0.75" />
+  
+  <!-- 2. Sharp katana blade horizon line cutting through all letters -->
+  <path d="M 20 140 Q 600 138 1180 140 Q 600 142 20 140 Z" fill="url(#steelBlade)" filter="url(#bladeGlow)" />
+
+  <!-- 3. Extended needle tips on left & right -->
+  <!-- Left needle tip -->
+  <polygon points="10,140 70,138 70,142" fill="#c4ccd6" />
+  <circle cx="10" cy="140" r="1" fill="#ffffff" />
+  
+  <!-- Right needle tip -->
+  <polygon points="1190,140 1130,138 1130,142" fill="#c4ccd6" />
+  <circle cx="1190" cy="140" r="1" fill="#ffffff" />
+
+  <!-- Fine specular reflection line -->
+  <line x1="60" y1="140" x2="1140" y2="140" stroke="#ffffff" stroke-width="0.8" opacity="0.9" />
+
+  <!-- Crimson droplets / splatter accents near the middle I and right A -->
+  <g fill="#9e2a2b" opacity="0.85">
+    <circle cx="493" cy="165" r="2.2" />
+    <circle cx="484" cy="178" r="1.5" />
+    <circle cx="502" cy="115" r="1.8" />
+    <circle cx="835" cy="168" r="2" />
+    <circle cx="848" cy="182" r="1.4" />
+  </g>
+</svg>
