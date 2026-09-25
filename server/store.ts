@@ -117,9 +117,9 @@ const defaultInitialStore: ContentStore = {
   characters: CHARACTERS.map((c) => ({ ...c, status: 'Published' })),
   storyArcs: STORY_ARCS.map((s) => ({ ...s, status: 'Published' })),
   mysteries: MYSTERY_FILES.map((m) => ({ ...m, status: 'Published' })),
-  oaths: OATHS.map((o) => ({ ...o, status: 'Published' })),
+  oaths: OATHS.map((o: any) => ({ ...o, status: 'Published' })),
   relationships: RELATIONSHIPS,
-  warRecords: WAR_RECORDS.map((w) => ({ ...w, status: 'Published' })),
+  warRecords: WAR_RECORDS.map((w: any) => ({ ...w, status: 'Published' })),
   gallery: GALLERY_ITEMS.map((g) => ({ ...g, status: 'Published' })),
   drafts: {},
 };

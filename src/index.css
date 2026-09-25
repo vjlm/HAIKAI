@@ -109,3 +109,70 @@
     break-inside: avoid;
   }
 }
+
+/* Split-Flap Countdown Card Flip Animations */
+.flip-panel-top {
+  transform-origin: 50% 100%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.flip-panel-bottom {
+  transform-origin: 50% 0%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+@keyframes flipFoldTop {
+  0% {
+    transform: rotateX(0deg);
+  }
+  100% {
+    transform: rotateX(-90deg);
+  }
+}
+
+@keyframes flipFoldBottom {
+  0% {
+    transform: rotateX(90deg);
+  }
+  100% {
+    transform: rotateX(0deg);
+  }
+}
+
+@keyframes flipShadow {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes flipHighlight {
+  0% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.animate-flip-top {
+  animation: flipFoldTop 0.26s cubic-bezier(0.4, 0, 0.6, 1) forwards;
+}
+
+.animate-flip-bottom {
+  animation: flipFoldBottom 0.26s 0.26s cubic-bezier(0.2, 0, 0.4, 1) forwards;
+  transform: rotateX(90deg);
+}
+
+.flip-shadow-top {
+  animation: flipShadow 0.26s ease-in forwards;
+}
+
+.flip-highlight-bottom {
+  animation: flipHighlight 0.26s 0.26s ease-out forwards;
+}
+

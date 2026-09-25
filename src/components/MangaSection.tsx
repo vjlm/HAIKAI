@@ -3,6 +3,7 @@ import { MangaRelease } from '../types/haikai';
 import { DEFAULT_MANGA_RELEASE } from '../data/haikaiData';
 import { Modal } from './Modal';
 import { BookOpen, ExternalLink, Info, Clock, CheckCircle2, Share2, Check } from 'lucide-react';
+import { FlipCard } from './FlipCard';
 
 interface MangaSectionProps {
   release?: MangaRelease;
@@ -312,41 +313,22 @@ export const MangaSection: React.FC<MangaSectionProps> = ({ release: propRelease
                       <span className="text-[#aeb9c7]">{localReleaseDateString}</span>
                     </div>
 
-                    <div className="grid grid-cols-4 gap-2 sm:gap-4 text-center">
-                      <div className="p-3 sm:p-4 border border-[#1b232e] bg-[#05070a]">
-                        <span className="font-editorial-mono text-2xl sm:text-4xl lg:text-5xl text-[#edf1f5] font-light block tabular-nums">
-                          {padZero(timeLeft.days)}
-                        </span>
-                        <span className="text-[10px] sm:text-xs font-cinzel tracking-[0.2em] text-[#6d798a] uppercase block mt-1">
-                          DAYS
-                        </span>
+                    {/* Split-Flap Card Flip Timer: Digits fit boxes, no text labels */}
+                    <div className="grid grid-cols-4 gap-2 sm:gap-3 md:gap-4 max-w-xl mx-auto">
+                      <div className="w-full flex justify-center">
+                        <FlipCard value={padZero(timeLeft.days)} />
                       </div>
 
-                      <div className="p-3 sm:p-4 border border-[#1b232e] bg-[#05070a]">
-                        <span className="font-editorial-mono text-2xl sm:text-4xl lg:text-5xl text-[#edf1f5] font-light block tabular-nums">
-                          {padZero(timeLeft.hours)}
-                        </span>
-                        <span className="text-[10px] sm:text-xs font-cinzel tracking-[0.2em] text-[#6d798a] uppercase block mt-1">
-                          HOURS
-                        </span>
+                      <div className="w-full flex justify-center">
+                        <FlipCard value={padZero(timeLeft.hours)} />
                       </div>
 
-                      <div className="p-3 sm:p-4 border border-[#1b232e] bg-[#05070a]">
-                        <span className="font-editorial-mono text-2xl sm:text-4xl lg:text-5xl text-[#edf1f5] font-light block tabular-nums">
-                          {padZero(timeLeft.minutes)}
-                        </span>
-                        <span className="text-[10px] sm:text-xs font-cinzel tracking-[0.2em] text-[#6d798a] uppercase block mt-1">
-                          MINUTES
-                        </span>
+                      <div className="w-full flex justify-center">
+                        <FlipCard value={padZero(timeLeft.minutes)} />
                       </div>
 
-                      <div className="p-3 sm:p-4 border border-[#2b181b] bg-[#0d0708]">
-                        <span className="font-editorial-mono text-2xl sm:text-4xl lg:text-5xl text-[#f2b3b5] font-light block tabular-nums animate-pulse">
-                          {padZero(timeLeft.seconds)}
-                        </span>
-                        <span className="text-[10px] sm:text-xs font-cinzel tracking-[0.2em] text-[#9e2a2b] uppercase block mt-1">
-                          SECONDS
-                        </span>
+                      <div className="w-full flex justify-center">
+                        <FlipCard value={padZero(timeLeft.seconds)} isAccent={true} />
                       </div>
                     </div>
                   </div>
