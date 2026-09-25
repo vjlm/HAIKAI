@@ -103,10 +103,13 @@ export const TrailersSection: React.FC<TrailersSectionProps> = ({ trailers: prop
                 {/* Dark gradient wash */}
                 <div className="absolute inset-0 bg-gradient-to-t from-[#070b10] via-black/40 to-transparent opacity-80 group-hover:opacity-60 transition-opacity" />
 
-                {/* Big Play Button Overlay */}
+                {/* Big Play Button Overlay with expanding ripple ring */}
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-14 h-14 rounded-full bg-[#9e2a2b]/90 group-hover:bg-[#b53235] text-white flex items-center justify-center shadow-xl group-hover:scale-110 transition-all duration-300 border border-white/20">
-                    <Play className="w-6 h-6 fill-white translate-x-0.5" />
+                  <div className="relative flex items-center justify-center">
+                    <span className="absolute inset-0 rounded-full border border-[#9e2a2b] animate-ripple pointer-events-none opacity-0 group-hover:opacity-75" />
+                    <div className="w-14 h-14 rounded-full bg-[#9e2a2b]/90 group-hover:bg-[#b53235] text-white flex items-center justify-center shadow-xl group-hover:scale-110 group-hover:shadow-[0_0_25px_rgba(158,42,43,0.7)] transition-all duration-300 border border-white/20">
+                      <Play className="w-6 h-6 fill-white translate-x-0.5" />
+                    </div>
                   </div>
                 </div>
 

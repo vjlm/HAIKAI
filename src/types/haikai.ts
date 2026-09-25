@@ -1,17 +1,46 @@
+export interface VisibleSections {
+  introduction?: boolean;
+  seaOfAsh?: boolean;
+  world?: boolean;
+  characters?: boolean;
+  ashSection?: boolean;
+  relationships?: boolean;
+  romance?: boolean;
+  oathSystem?: boolean;
+  storyArcs?: boolean;
+  mysteries?: boolean;
+  manga?: boolean;
+  warRecords?: boolean;
+  trailers?: boolean;
+  gallery?: boolean;
+  finalQuestion?: boolean;
+}
+
 export interface SiteSettings {
   siteTitle: string;
   siteSubtitle: string;
   japaneseTitle: string;
   tagline: string;
   ctaPrimaryLabel: string;
+  ctaPrimaryLink?: string;
   ctaSecondaryLabel: string;
-  heroNotice: string;
+  ctaSecondaryLink?: string;
+  heroNotice?: string;
+  showHeroNotice?: boolean;
+  heroNoticeLink?: string;
+  accentColor?: string;
+  showAshParticles?: boolean;
+  animationSpeed?: 'calm' | 'cinematic' | 'hyper';
+  ambientAudioUrl?: string;
+  ambientAudioTitle?: string;
+  visibleSections?: VisibleSections;
   socialLinks: {
     x?: string;
     instagram?: string;
     youtube?: string;
     discord?: string;
   };
+  footerCredits?: string;
   seoDescription: string;
   updatedAt?: string;
 }

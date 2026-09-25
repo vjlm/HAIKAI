@@ -88,7 +88,7 @@ const defaultInitialStore: ContentStore = {
     subtitle: HAIKAI_META.subtitle,
     centralQuestion: HAIKAI_META.centralQuestion,
     deeperQuestion: HAIKAI_META.deeperQuestion,
-    tagline: 'PRE-FLOOD RECKONING',
+    tagline: '“Was this world ever meant to be saved?”',
     heroCtaPrimary: '[ ENTER THE WORLD → ]',
     heroCtaSecondary: '[ MEET THE CHARACTERS ]',
     socialLinks: {

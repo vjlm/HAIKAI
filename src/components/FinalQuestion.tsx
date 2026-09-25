@@ -23,10 +23,10 @@ export const FinalQuestion: React.FC = () => {
           <button
             onClick={() => setChoice('illusion')}
             type="button"
-            className={`w-full sm:w-auto px-6 py-3.5 border text-xs font-cinzel uppercase tracking-[0.2em] font-semibold transition-all flex items-center justify-center gap-2 ${
+            className={`w-full sm:w-auto px-7 py-4 border text-xs font-cinzel uppercase tracking-[0.2em] font-semibold hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-2 ${
               choice === 'illusion'
-                ? 'border-[#3b4c60] bg-[#121924] text-white shadow-[0_0_15px_rgba(59,76,96,0.3)]'
-                : 'border-[#1b2432] bg-[#070b10] text-[#788597] hover:border-[#2f3e52] hover:text-[#cbd4e0]'
+                ? 'border-[#3b4c60] bg-[#121924] text-white shadow-[0_0_20px_rgba(59,76,96,0.4)]'
+                : 'border-[#1b2432] bg-[#070b10] text-[#788597] hover:border-[#384a60] hover:text-[#cbd4e0] hover:shadow-[0_0_15px_rgba(59,76,96,0.2)]'
             }`}
           >
             <EyeOff className="w-4 h-4 text-[#5e7087]" />
@@ -36,13 +36,13 @@ export const FinalQuestion: React.FC = () => {
           <button
             onClick={() => setChoice('truth')}
             type="button"
-            className={`w-full sm:w-auto px-6 py-3.5 border text-xs font-cinzel uppercase tracking-[0.2em] font-semibold transition-all flex items-center justify-center gap-2 ${
+            className={`w-full sm:w-auto px-7 py-4 border text-xs font-cinzel uppercase tracking-[0.2em] font-semibold hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-2 ${
               choice === 'truth'
-                ? 'border-[#9e2a2b] bg-[#1d080b] text-[#f2afb2] shadow-[0_0_15px_rgba(158,42,43,0.35)]'
-                : 'border-[#2e1518] bg-[#0d0608] text-[#9c8489] hover:border-[#9e2a2b] hover:text-white'
+                ? 'border-[#9e2a2b] bg-[#1d080b] text-[#f2afb2] shadow-[0_0_25px_rgba(158,42,43,0.5)]'
+                : 'border-[#2e1518] bg-[#0d0608] text-[#9c8489] hover:border-[#9e2a2b] hover:text-white hover:shadow-[0_0_20px_rgba(158,42,43,0.35)]'
             }`}
           >
-            <Eye className="w-4 h-4 text-[#9e2a2b]" />
+            <Eye className="w-4 h-4 text-[#9e2a2b] animate-pulse" />
             <span>[ SHATTER THE QUARANTINE SEAL ]</span>
           </button>
         </div>

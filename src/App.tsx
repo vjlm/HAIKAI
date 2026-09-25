@@ -21,6 +21,7 @@ import { SpoilerModal } from './components/SpoilerModal';
 import { LoadingScreen } from './components/LoadingScreen';
 import { AdminLogin } from './components/admin/AdminLogin';
 import { AdminDashboard } from './components/admin/AdminDashboard';
+import { FloatingParticles } from './components/common/FloatingParticles';
 import { Eye, ShieldAlert } from 'lucide-react';
 
 export default function App() {
@@ -162,11 +163,42 @@ export default function App() {
     );
   }
 
+  // Extract section visibility settings
+  const visible = dynamicContent.settings?.visibleSections || {
+    introduction: true,
+    seaOfAsh: true,
+    world: true,
+    characters: true,
+    ashSection: true,
+    relationships: true,
+    romance: true,
+    oathSystem: true,
+    storyArcs: true,
+    mysteries: true,
+    manga: true,
+    warRecords: true,
+    trailers: true,
+    gallery: true,
+    finalQuestion: true,
+  };
+
+  // Sync theme accent color to root CSS variable
+  useEffect(() => {
+    if (dynamicContent.settings?.accentColor) {
+      document.documentElement.style.setProperty('--primary-accent', dynamicContent.settings.accentColor);
+    }
+  }, [dynamicContent.settings?.accentColor]);
+
   // PUBLIC SITE VIEW (with optional Preview Mode banner)
   return (
     <div className="min-h-screen bg-[#050608] text-[#c0c5cc] selection:bg-[#9e2a2b] selection:text-white flex flex-col relative overflow-x-hidden">
       {/* Cinematic Initial Loading Sequence */}
       {isLoading && <LoadingScreen onComplete={() => setIsLoading(false)} />}
+
+      {/* Floating Ash & Ember Particles Background Drift */}
+      {dynamicContent.settings?.showAshParticles !== false && (
+        <FloatingParticles color={dynamicContent.settings?.accentColor || '#9e2a2b'} />
+      )}
 
       {/* Owner Preview Mode Notification Bar */}
       {isPreviewMode && (
@@ -192,57 +224,58 @@ export default function App() {
       {/* Top Bar Navigation */}
       <Navigation
         onOpenSpoilerModal={() => setSpoilerModalOpen(true)}
+        visibleSections={visible}
       />
 
       {/* Main Website Sections (Section 55 Sequence) */}
-      <main className="flex-1 flex flex-col">
+      <main className="flex-1 flex flex-col relative z-10">
         {/* 1. Hero Section */}
         <Hero settings={dynamicContent.settings} />
 
         {/* 2. The First Flood (Introduction) */}
-        <Introduction />
+        {visible.introduction !== false && <Introduction />}
 
         {/* 3. The Sea of Ash (Three Rules) */}
-        <SeaOfAsh />
+        {visible.seaOfAsh !== false && <SeaOfAsh />}
 
         {/* 4. The World (Five Regions) */}
-        <WorldSection regions={dynamicContent.regions} />
+        {visible.world !== false && <WorldSection regions={dynamicContent.regions} />}
 
         {/* 5. Characters (Key Dossiers) */}
-        <CharactersSection characters={dynamicContent.characters} />
+        {visible.characters !== false && <CharactersSection characters={dynamicContent.characters} />}
 
         {/* 6. Ash (Miracles vs Mutations) */}
-        <AshSection />
+        {visible.ashSection !== false && <AshSection />}
 
         {/* 7. Character Relationships */}
-        <RelationshipGraph />
+        {visible.relationships !== false && <RelationshipGraph />}
 
         {/* 8. Romance (Some Things Are Never Said) */}
-        <RomanceSection />
+        {visible.romance !== false && <RomanceSection />}
 
         {/* 9. Oath System (Power Has A Price) */}
-        <OathSystem />
+        {visible.oathSystem !== false && <OathSystem />}
 
         {/* 10. The Descent (Story Arcs Timeline) */}
-        <ArcTimeline storyArcs={dynamicContent.storyArcs} />
+        {visible.storyArcs !== false && <ArcTimeline storyArcs={dynamicContent.storyArcs} />}
 
         {/* 11. Mystery Archive (Classified Files) */}
-        <MysteryArchive mysteries={dynamicContent.mysteries} />
+        {visible.mysteries !== false && <MysteryArchive mysteries={dynamicContent.mysteries} />}
 
         {/* 12. Manga Release (Major Landmark) */}
-        <MangaSection release={dynamicContent.mangaRelease} />
+        {visible.manga !== false && <MangaSection release={dynamicContent.mangaRelease} />}
 
         {/* 13. War Records (Censorship & Historical Fragments) */}
-        <WarRecords />
+        {visible.warRecords !== false && <WarRecords />}
 
         {/* 14. Official Trailers & Video Archives */}
-        <TrailersSection trailers={dynamicContent.trailers} />
+        {visible.trailers !== false && <TrailersSection trailers={dynamicContent.trailers} />}
 
         {/* 15. Visual Gallery & Lightbox */}
-        <Gallery galleryItems={dynamicContent.galleryItems} />
+        {visible.gallery !== false && <Gallery galleryItems={dynamicContent.galleryItems} />}
 
         {/* 16. Final Question & Ending Epilogue Scene */}
-        <FinalQuestion />
+        {visible.finalQuestion !== false && <FinalQuestion />}
       </main>
 
       {/* Official Anime Production Archive Footer */}

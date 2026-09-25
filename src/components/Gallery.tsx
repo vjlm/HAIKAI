@@ -155,10 +155,10 @@ export const Gallery: React.FC<GalleryProps> = ({ galleryItems: propItems }) => 
                 setActiveItemIndex(null);
               }}
               type="button"
-              className={`px-3.5 sm:px-4 py-2 min-h-[44px] text-xs font-cinzel tracking-[0.18em] uppercase border transition-all whitespace-nowrap ${
+              className={`px-4 py-2 min-h-[44px] text-xs font-cinzel tracking-[0.18em] uppercase border transition-all duration-200 whitespace-nowrap hover:scale-105 active:scale-95 ${
                 activeCategory === cat
-                  ? 'border-[#9e2a2b] bg-[#121824] text-white shadow-md'
-                  : 'border-[#1b232e] bg-[#07090d] text-[#6c7786] hover:text-[#b8c2ce] hover:border-[#2b3648]'
+                  ? 'border-[#9e2a2b] bg-[#1a080b] text-white shadow-[0_0_15px_rgba(158,42,43,0.35)]'
+                  : 'border-[#1b232e] bg-[#07090d] text-[#6c7786] hover:text-[#b8c2ce] hover:border-[#38475c] hover:bg-[#0c1219]'
               }`}
             >
               {cat}
@@ -172,7 +172,7 @@ export const Gallery: React.FC<GalleryProps> = ({ galleryItems: propItems }) => 
             <div
               key={item.id}
               onClick={() => setActiveItemIndex(idx)}
-              className="group border border-[#1e2735] bg-[#080b10] overflow-hidden cursor-pointer transition-all duration-300 hover:border-[#3b4b63] hover:-translate-y-1 flex flex-col justify-between"
+              className="group border border-[#1e2735] bg-[#080b10] overflow-hidden cursor-pointer transition-all duration-300 hover:border-[#9e2a2b]/70 hover:-translate-y-1.5 hover:shadow-[0_12px_30px_rgba(0,0,0,0.8),0_0_20px_rgba(158,42,43,0.25)] flex flex-col justify-between"
             >
               {/* Cinematic Art Container */}
               <div className="relative aspect-video w-full bg-[#0d121a] flex items-center justify-center overflow-hidden border-b border-[#18212e]">

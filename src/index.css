@@ -176,3 +176,146 @@
   animation: flipHighlight 0.26s 0.26s ease-out forwards;
 }
 
+/* ==========================================================================
+   CINEMATIC TEXT & BUTTON ANIMATIONS
+   ========================================================================== */
+
+/* Typography classes */
+.font-cinzel {
+  font-family: 'Cinzel', serif;
+}
+
+.font-jp {
+  font-family: 'Shippori Mincho', 'Noto Serif JP', serif;
+}
+
+.font-serif-cinematic {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+}
+
+.font-editorial-mono {
+  font-family: 'Space Mono', monospace;
+}
+
+/* Shimmer sweep animation across button surfaces */
+@keyframes shimmerSweep {
+  0% {
+    transform: translateX(-150%) skewX(-20deg);
+  }
+  100% {
+    transform: translateX(250%) skewX(-20deg);
+  }
+}
+
+.animate-shimmer-sweep {
+  animation: shimmerSweep 3.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+/* Ash ember aura pulse */
+@keyframes emberGlow {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(158, 42, 43, 0.25), inset 0 0 10px rgba(158, 42, 43, 0.15);
+  }
+  50% {
+    box-shadow: 0 0 32px rgba(158, 42, 43, 0.6), inset 0 0 16px rgba(158, 42, 43, 0.35);
+  }
+}
+
+.animate-ember-glow {
+  animation: emberGlow 3s ease-in-out infinite;
+}
+
+/* Floating ink/kanji drift animation */
+@keyframes textFloat {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.animate-text-float {
+  animation: textFloat 5s ease-in-out infinite;
+}
+
+/* Title text ethereal glow */
+@keyframes titleGlow {
+  0%, 100% {
+    text-shadow: 0 0 20px rgba(237, 241, 245, 0.2), 0 0 40px rgba(158, 42, 43, 0.2);
+  }
+  50% {
+    text-shadow: 0 0 35px rgba(237, 241, 245, 0.45), 0 0 65px rgba(158, 42, 43, 0.5);
+  }
+}
+
+.animate-title-glow {
+  animation: titleGlow 4.5s ease-in-out infinite;
+}
+
+/* Expanding ripple ring for play buttons and radars */
+@keyframes rippleExpand {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+
+.animate-ripple {
+  animation: rippleExpand 2s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+}
+
+/* Button & card interactive micro-interactions */
+.btn-cinematic {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.btn-cinematic:hover {
+  transform: translateY(-2px);
+}
+
+.btn-cinematic:active {
+  transform: translateY(0px) scale(0.98);
+}
+
+.card-cinematic {
+  transition: all 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.card-cinematic:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.7), 0 0 20px rgba(158, 42, 43, 0.2);
+}
+
+/* Floating particles background drift */
+@keyframes driftParticle {
+  0% {
+    transform: translateY(105vh) translateX(0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.8;
+  }
+  90% {
+    opacity: 0.7;
+  }
+  100% {
+    transform: translateY(-10vh) translateX(60px) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.ash-particle {
+  position: absolute;
+  pointer-events: none;
+  border-radius: 50%;
+  animation: driftParticle linear infinite;
+}
+
+

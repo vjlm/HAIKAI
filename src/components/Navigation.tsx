@@ -2,13 +2,16 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Volume2, VolumeX, Menu, X, ShieldAlert, BookOpen } from 'lucide-react';
 import { soundManager } from '../utils/audio';
 import { HaikaiLogo } from './HaikaiLogo';
+import { VisibleSections } from '../types/haikai';
 
 interface NavigationProps {
   onOpenSpoilerModal: () => void;
+  visibleSections?: VisibleSections;
 }
 
 export const Navigation: React.FC<NavigationProps> = ({
   onOpenSpoilerModal,
+  visibleSections,
 }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMuted, setIsMuted] = useState(() => soundManager.getIsMuted());
@@ -66,17 +69,19 @@ export const Navigation: React.FC<NavigationProps> = ({
     setIsMuted(!playing);
   };
 
-  const navLinks = [
-    { label: 'WORLD', href: '#world' },
-    { label: 'CHARACTERS', href: '#characters' },
-    { label: 'STORY', href: '#story' },
-    { label: 'OATH', href: '#oath' },
-    { label: 'MYSTERIES', href: '#mysteries' },
-    { label: 'TRAILERS', href: '#trailers' },
-    { label: 'GALLERY', href: '#gallery' },
-    { label: 'MANGA', href: '#manga' },
-    { label: 'ABOUT', href: '#about' },
+  const allNavLinks = [
+    { label: 'WORLD', href: '#world', visible: visibleSections?.world !== false },
+    { label: 'CHARACTERS', href: '#characters', visible: visibleSections?.characters !== false },
+    { label: 'STORY', href: '#story', visible: visibleSections?.storyArcs !== false },
+    { label: 'OATH', href: '#oath', visible: visibleSections?.oathSystem !== false },
+    { label: 'MYSTERIES', href: '#mysteries', visible: visibleSections?.mysteries !== false },
+    { label: 'TRAILERS', href: '#trailers', visible: visibleSections?.trailers !== false },
+    { label: 'GALLERY', href: '#gallery', visible: visibleSections?.gallery !== false },
+    { label: 'MANGA', href: '#manga', visible: visibleSections?.manga !== false },
+    { label: 'ABOUT', href: '#about', visible: visibleSections?.introduction !== false },
   ];
+
+  const navLinks = allNavLinks.filter((l) => l.visible);
 
   return (
     <>
@@ -118,25 +123,25 @@ export const Navigation: React.FC<NavigationProps> = ({
           <div className="flex items-center gap-2.5 sm:gap-4">
             <a
               href="#manga"
-              className="hidden md:flex items-center gap-1.5 px-3 py-1.5 text-xs uppercase tracking-wider text-[#f2afb2] border border-[#9e2a2b]/60 hover:border-[#9e2a2b] bg-[#16080a]/60 hover:bg-[#1f090c] transition-all whitespace-nowrap"
+              className="hidden md:flex items-center gap-1.5 px-3 py-1.5 text-xs uppercase tracking-wider text-[#f2afb2] border border-[#9e2a2b]/60 hover:border-[#9e2a2b] bg-[#16080a]/60 hover:bg-[#1f090c] hover:shadow-[0_0_15px_rgba(158,42,43,0.35)] hover:scale-105 active:scale-95 transition-all whitespace-nowrap"
             >
-              <BookOpen className="w-3.5 h-3.5 text-[#9e2a2b]" />
+              <BookOpen className="w-3.5 h-3.5 text-[#9e2a2b] transition-transform duration-300 group-hover:scale-110" />
               <span className="font-editorial-mono text-[11px]">VOL. 01</span>
             </a>
 
             <button
               onClick={toggleSound}
               type="button"
-              className={`flex items-center gap-2 px-2.5 sm:px-3 py-1.5 min-h-[38px] text-xs uppercase tracking-wider border rounded transition-all whitespace-nowrap focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#9e2a2b] ${
+              className={`flex items-center gap-2 px-2.5 sm:px-3 py-1.5 min-h-[38px] text-xs uppercase tracking-wider border rounded transition-all whitespace-nowrap hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#9e2a2b] ${
                 !isMuted
-                  ? 'text-[#f6c2c4] border-[#9e2a2b]/80 bg-[#220a0d]/80 hover:bg-[#2e0e12] shadow-[0_0_12px_rgba(158,42,43,0.35)]'
-                  : 'text-[#8c97a5] hover:text-[#e8ebed] border-[#202732] hover:border-[#384355] bg-[#0c1015]/60'
+                  ? 'text-[#f6c2c4] border-[#9e2a2b]/80 bg-[#220a0d]/80 hover:bg-[#2e0e12] shadow-[0_0_14px_rgba(158,42,43,0.4)]'
+                  : 'text-[#8c97a5] hover:text-[#e8ebed] border-[#202732] hover:border-[#384355] bg-[#0c1015]/60 hover:shadow-sm'
               }`}
               aria-label={isMuted ? 'Unmute background music' : 'Mute background music'}
               title={isMuted ? 'Unmute soundtrack (Continuous Loop)' : 'Mute soundtrack'}
             >
               {isMuted ? (
-                <VolumeX className="w-3.5 h-3.5 text-[#7c8796]" />
+                <VolumeX className="w-3.5 h-3.5 text-[#7c8796] transition-transform group-hover:scale-110" />
               ) : (
                 <Volume2 className="w-3.5 h-3.5 text-[#e63946] animate-pulse" />
               )}
@@ -148,9 +153,9 @@ export const Navigation: React.FC<NavigationProps> = ({
             <button
               onClick={onOpenSpoilerModal}
               type="button"
-              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 min-h-[38px] text-xs uppercase tracking-widest text-[#d8dadf] hover:text-white border border-[#2b3442] hover:border-[#9e2a2b]/80 bg-[#0e1219]/80 hover:bg-[#151c27] rounded transition-all whitespace-nowrap focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#9e2a2b]"
+              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 min-h-[38px] text-xs uppercase tracking-widest text-[#d8dadf] hover:text-white border border-[#2b3442] hover:border-[#9e2a2b]/80 bg-[#0e1219]/80 hover:bg-[#151c27] hover:shadow-[0_0_15px_rgba(158,42,43,0.3)] hover:scale-105 active:scale-95 rounded transition-all whitespace-nowrap focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#9e2a2b]"
             >
-              <ShieldAlert className="w-3.5 h-3.5 text-[#9e2a2b]" />
+              <ShieldAlert className="w-3.5 h-3.5 text-[#9e2a2b] transition-transform group-hover:rotate-12" />
               <span className="font-editorial-mono text-[11px]">ARCHIVE // 07</span>
             </button>
 
@@ -158,7 +163,7 @@ export const Navigation: React.FC<NavigationProps> = ({
             <button
               onClick={() => setMobileMenuOpen(true)}
               type="button"
-              className="xl:hidden p-2.5 min-h-[44px] min-w-[44px] flex items-center justify-center text-[#9aa3ae] hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#9e2a2b]"
+              className="xl:hidden p-2.5 min-h-[44px] min-w-[44px] flex items-center justify-center text-[#9aa3ae] hover:text-white hover:scale-105 active:scale-95 transition-all focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#9e2a2b]"
               aria-label="Open mobile navigation"
             >
               <Menu className="w-5 h-5" />

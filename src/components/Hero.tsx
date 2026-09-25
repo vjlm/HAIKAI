@@ -10,28 +10,46 @@ interface HeroProps {
 export const Hero: React.FC<HeroProps> = ({ settings: propSettings }) => {
   const settings = propSettings || DEFAULT_SETTINGS;
 
+  // Custom notice badge - only rendered if explicitly turned on by owner and has custom non-empty text
+  const hasCustomNotice =
+    Boolean(settings.showHeroNotice) &&
+    Boolean(settings.heroNotice) &&
+    settings.heroNotice?.trim() !== '' &&
+    settings.heroNotice !== 'PRE-FLOOD RECKONING';
+
   return (
     <section className="relative min-h-[92vh] flex flex-col items-center justify-center text-center px-4 sm:px-6 pt-20 pb-16 overflow-hidden">
       {/* Background ambient radial glow */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-[#18090b] via-[#080a0e] to-[#040507] opacity-80" />
-      
+
       {/* Subtle ash grid lines */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#141c2808_1px,transparent_1px),linear-gradient(to_bottom,#141c2808_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] pointer-events-none" />
 
       <div className="relative z-10 max-w-4xl mx-auto flex flex-col items-center space-y-6">
-        {/* Notice badge */}
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-[#9e2a2b]/40 bg-[#16080a]/60 text-[#f2afb2] text-[11px] font-editorial-mono tracking-widest uppercase">
-          <ShieldAlert className="w-3.5 h-3.5 text-[#9e2a2b]" />
-          <span>{settings.heroNotice || 'PRE-FLOOD RECKONING'}</span>
-        </div>
+        {/* Notice badge - only show when custom announcement is active and not the pre-flood placeholder */}
+        {hasCustomNotice && (
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-[#9e2a2b]/50 bg-[#16080a]/80 text-[#f2afb2] text-[11px] font-editorial-mono tracking-widest uppercase animate-in fade-in zoom-in duration-500 hover:border-[#9e2a2b] hover:shadow-[0_0_15px_rgba(158,42,43,0.35)] transition-all">
+            <ShieldAlert className="w-3.5 h-3.5 text-[#9e2a2b] animate-pulse" />
+            {settings.heroNoticeLink ? (
+              <a
+                href={settings.heroNoticeLink}
+                className="hover:underline hover:text-white transition-colors"
+              >
+                {settings.heroNotice}
+              </a>
+            ) : (
+              <span>{settings.heroNotice}</span>
+            )}
+          </div>
+        )}
 
-        {/* Japanese Title */}
-        <span className="font-jp text-6xl sm:text-7xl md:text-8xl lg:text-9xl text-[#f0f4f8] font-light tracking-[0.25em] select-none opacity-90">
+        {/* Japanese Title with floating breathing animation */}
+        <span className="font-jp text-6xl sm:text-7xl md:text-8xl lg:text-9xl text-[#f0f4f8] font-light tracking-[0.25em] select-none opacity-90 animate-text-float hover:opacity-100 hover:drop-shadow-[0_0_35px_rgba(240,244,248,0.5)] transition-all duration-700 cursor-default">
           {settings.japaneseTitle || '灰海'}
         </span>
 
-        {/* English Title */}
-        <h1 className="font-cinzel text-2xl sm:text-4xl md:text-5xl lg:text-6xl text-[#edf1f5] uppercase tracking-[0.3em] font-medium leading-tight">
+        {/* English Title with ethereal glow and tracking response */}
+        <h1 className="font-cinzel text-2xl sm:text-4xl md:text-5xl lg:text-6xl text-[#edf1f5] uppercase tracking-[0.25em] sm:tracking-[0.3em] hover:tracking-[0.32em] font-medium leading-tight animate-title-glow transition-all duration-500">
           {settings.siteTitle || 'HAIKAI — The Sea of Ash'}
         </h1>
 
@@ -40,26 +58,35 @@ export const Hero: React.FC<HeroProps> = ({ settings: propSettings }) => {
           {settings.tagline || '“Was this world ever meant to be saved?”'}
         </p>
 
-        {/* CTA Actions */}
+        {/* CTA Actions with tactile animations and shimmer effects */}
         <div className="flex flex-col sm:flex-row items-center gap-4 pt-6">
           <a
-            href="#manga"
-            className="w-full sm:w-auto px-7 py-3.5 bg-[#9e2a2b] hover:bg-[#b53235] text-white font-cinzel text-xs uppercase tracking-[0.25em] font-semibold border border-[#9e2a2b] shadow-[0_0_25px_rgba(158,42,43,0.35)] transition-all flex items-center justify-center gap-2"
+            href={settings.ctaPrimaryLink || '#manga'}
+            className="group relative overflow-hidden w-full sm:w-auto px-8 py-4 bg-[#9e2a2b] hover:bg-[#b53235] text-white font-cinzel text-xs uppercase tracking-[0.25em] font-semibold border border-[#9e2a2b] shadow-[0_0_25px_rgba(158,42,43,0.35)] hover:shadow-[0_0_35px_rgba(158,42,43,0.65)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-2"
           >
-            <span>{settings.ctaPrimaryLabel || '[ ENTER THE WORLD → ]'}</span>
+            {/* Shimmer sweep effect */}
+            <span
+              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out pointer-events-none"
+              aria-hidden="true"
+            />
+            <span className="relative z-10 flex items-center gap-2 group-hover:translate-x-0.5 transition-transform duration-300">
+              {settings.ctaPrimaryLabel || '[ ENTER THE WORLD → ]'}
+            </span>
           </a>
 
           <a
-            href="#characters"
-            className="w-full sm:w-auto px-7 py-3.5 bg-[#0b0f15]/80 hover:bg-[#131b26] text-[#c4ccd6] hover:text-white font-cinzel text-xs uppercase tracking-[0.25em] border border-[#222c3a] hover:border-[#3b495c] transition-all flex items-center justify-center gap-2"
+            href={settings.ctaSecondaryLink || '#characters'}
+            className="group relative overflow-hidden w-full sm:w-auto px-8 py-4 bg-[#0b0f15]/80 hover:bg-[#131b26] text-[#c4ccd6] hover:text-white font-cinzel text-xs uppercase tracking-[0.25em] border border-[#222c3a] hover:border-[#9e2a2b]/70 hover:shadow-[0_0_20px_rgba(158,42,43,0.2)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-2"
           >
-            <Compass className="w-4 h-4 text-[#9e2a2b]" />
-            <span>{settings.ctaSecondaryLabel || '[ MEET THE CHARACTERS ]'}</span>
+            <Compass className="w-4 h-4 text-[#9e2a2b] group-hover:rotate-45 transition-transform duration-500 ease-out" />
+            <span className="relative z-10 group-hover:text-white transition-colors">
+              {settings.ctaSecondaryLabel || '[ MEET THE CHARACTERS ]'}
+            </span>
           </a>
         </div>
       </div>
 
-      {/* Scroll indicator */}
+      {/* Scroll indicator with smooth bounce */}
       <div className="absolute bottom-6 flex flex-col items-center gap-1.5 text-[#5e6978] animate-bounce pointer-events-none">
         <span className="text-[10px] font-editorial-mono tracking-widest uppercase">SCROLL</span>
         <ChevronDown className="w-4 h-4 text-[#9e2a2b]" />

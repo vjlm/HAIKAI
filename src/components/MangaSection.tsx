@@ -351,28 +351,29 @@ export const MangaSection: React.FC<MangaSectionProps> = ({ release: propRelease
                     <button
                       onClick={handleReadClick}
                       type="button"
-                      className="w-full sm:w-auto px-8 py-4 text-xs font-cinzel tracking-[0.25em] text-white uppercase bg-[#9e2a2b] hover:bg-[#b83335] transition-all flex items-center justify-center gap-2 shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#9e2a2b]"
+                      className="group relative overflow-hidden w-full sm:w-auto px-8 py-4 text-xs font-cinzel tracking-[0.25em] group-hover:tracking-[0.3em] text-white uppercase bg-[#9e2a2b] hover:bg-[#b83335] shadow-[0_0_25px_rgba(158,42,43,0.4)] hover:shadow-[0_0_35px_rgba(158,42,43,0.7)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#9e2a2b]"
                     >
-                      <BookOpen className="w-4 h-4" />
-                      <span>READ VOLUME 01 →</span>
+                      <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out" />
+                      <BookOpen className="w-4 h-4 transition-transform group-hover:scale-110" />
+                      <span className="relative z-10">READ VOLUME 01 →</span>
                     </button>
                   ) : (
                     <button
                       onClick={() => setDetailsModalOpen(true)}
                       type="button"
-                      className="w-full sm:w-auto px-8 py-4 text-xs font-cinzel tracking-[0.25em] text-[#d4d9df] uppercase border border-[#3b4759] bg-[#0d121a] hover:bg-[#141b26] hover:border-[#9e2a2b] transition-all flex items-center justify-center gap-2 shadow-xl"
+                      className="group relative overflow-hidden w-full sm:w-auto px-8 py-4 text-xs font-cinzel tracking-[0.25em] text-[#d4d9df] hover:text-white uppercase border border-[#3b4759] hover:border-[#9e2a2b] bg-[#0d121a] hover:bg-[#141b26] hover:shadow-[0_0_20px_rgba(158,42,43,0.3)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-2"
                     >
-                      <Clock className="w-4 h-4 text-[#9e2a2b]" />
-                      <span>[ COUNTDOWN ACTIVE ]</span>
+                      <Clock className="w-4 h-4 text-[#9e2a2b] animate-pulse" />
+                      <span className="relative z-10">[ COUNTDOWN ACTIVE ]</span>
                     </button>
                   )}
 
                   <button
                     onClick={() => setDetailsModalOpen(true)}
                     type="button"
-                    className="w-full sm:w-auto px-6 py-4 text-xs font-cinzel tracking-[0.2em] text-[#8692a1] hover:text-white uppercase border border-[#1b232e] hover:border-[#38465d] bg-[#06090d] transition-all flex items-center justify-center gap-2"
+                    className="group w-full sm:w-auto px-6 py-4 text-xs font-cinzel tracking-[0.2em] text-[#8692a1] hover:text-white uppercase border border-[#1b232e] hover:border-[#38465d] bg-[#06090d] hover:bg-[#0c1219] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-2"
                   >
-                    <Info className="w-3.5 h-3.5" />
+                    <Info className="w-3.5 h-3.5 text-[#6c7d91] group-hover:text-[#9e2a2b] transition-colors" />
                     <span>VIEW DETAILS & CHAPTERS</span>
                   </button>
                 </div>
