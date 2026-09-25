@@ -1,0 +1,78 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-cinzel: 'Cinzel', serif;
+    --font-serif: 'Cormorant Garamond', serif;
+    --font-jp: 'Shippori Mincho', serif;
+    --font-sans: 'Plus Jakarta Sans', sans-serif;
+    --font-mono: 'Space Mono', monospace;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: #050608;
+    color: #c0c5cc;
+    overflow-x: hidden;
+  }
+
+  /* Custom subtle scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #050608;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #1e242d;
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #333d4b;
+  }
+}
+
+.font-cinzel {
+  font-family: var(--font-cinzel);
+}
+
+.font-jp {
+  font-family: var(--font-jp);
+}
+
+.font-serif-cinematic {
+  font-family: var(--font-serif);
+}
+
+.font-editorial-mono {
+  font-family: var(--font-mono);
+}
+
+/* Subtle Film Grain */
+.film-grain {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.035'/%3E%3C/svg%3E");
+}
+
+/* Cinematic Vignette */
+.cinematic-vignette {
+  background: radial-gradient(circle at center, transparent 35%, rgba(4, 5, 7, 0.85) 100%);
+}
+
+.dark-rim {
+  box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.8);
+}
+
+/* Redaction block for classified files */
+.redacted-bar {
+  background-color: #12151a;
+  color: transparent;
+  user-select: none;
+  display: inline-block;
+  padding: 0 4px;
+  transition: all 0.3s ease;
+}
+
+.redacted-bar:hover {
+  background-color: rgba(158, 42, 43, 0.25);
+  color: #c99394;
+}
