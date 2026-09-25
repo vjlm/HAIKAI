@@ -9,6 +9,7 @@ import {
   recordAudit,
   verifyPassword,
   hashPassword,
+  UPLOADS_DIR,
 } from './db';
 import {
   MangaRelease,
@@ -659,15 +660,20 @@ apiRouter.post('/admin/upload', requireAdmin, (req: Request, res: Response) => {
 
     const safeBase = (filename || 'upload').replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 30);
     const uniqueName = `${safeBase}_${Date.now()}.${ext}`;
-    const uploadDir = path.resolve(process.cwd(), 'data', 'uploads');
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
+    
+    let publicUrl = dataUrl;
+    try {
+      if (!fs.existsSync(UPLOADS_DIR)) {
+        fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+      }
+      const filePath = path.join(UPLOADS_DIR, uniqueName);
+      fs.writeFileSync(filePath, buffer);
+      publicUrl = `/uploads/${uniqueName}`;
+    } catch (diskErr) {
+      console.warn('[Upload] Disk write failed, using data URL fallback for serverless:', diskErr);
+      publicUrl = dataUrl;
     }
 
-    const filePath = path.join(uploadDir, uniqueName);
-    fs.writeFileSync(filePath, buffer);
-
-    const publicUrl = `/uploads/${uniqueName}`;
     recordAudit('Owner', 'UPLOAD_IMAGE', 'Media', uniqueName, `Uploaded ${mimeType} (${Math.round(buffer.length / 1024)} KB)`);
 
     res.json({

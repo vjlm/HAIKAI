@@ -36,16 +36,38 @@ export interface DatabaseSchema {
   auditLogs: AuditLog[];
 }
 
-const DATA_DIR = path.resolve(process.cwd(), 'data');
-const DB_FILE = path.join(DATA_DIR, 'haikai_db.json');
-const UPLOADS_DIR = path.join(DATA_DIR, 'uploads');
+const isServerless = Boolean(
+  process.env.VERCEL ||
+  process.env.AWS_LAMBDA_FUNCTION_NAME ||
+  process.env.LAMBDA_TASK_ROOT
+);
 
-// Ensure directories exist
-if (!fs.existsSync(DATA_DIR)) {
-  fs.mkdirSync(DATA_DIR, { recursive: true });
+export const DATA_DIR = isServerless
+  ? path.resolve('/tmp', 'haikai_data')
+  : path.resolve(process.cwd(), 'data');
+
+export const DB_FILE = path.join(DATA_DIR, 'haikai_db.json');
+export const UPLOADS_DIR = isServerless
+  ? path.resolve('/tmp', 'haikai_uploads')
+  : path.join(DATA_DIR, 'uploads');
+
+const BUNDLED_DB_FILE = path.resolve(process.cwd(), 'data', 'haikai_db.json');
+
+// Ensure directories exist safely without throwing in read-only environments
+try {
+  if (!fs.existsSync(DATA_DIR)) {
+    fs.mkdirSync(DATA_DIR, { recursive: true });
+  }
+} catch (e) {
+  // Silent fallback in read-only environment
 }
-if (!fs.existsSync(UPLOADS_DIR)) {
-  fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+
+try {
+  if (!fs.existsSync(UPLOADS_DIR)) {
+    fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+  }
+} catch (e) {
+  // Silent fallback in read-only environment
 }
 
 export function hashPassword(password: string, salt?: string): { passwordHash: string; salt: string } {
@@ -110,17 +132,31 @@ let dbCache: DatabaseSchema | null = null;
 function loadDatabase(): DatabaseSchema {
   if (dbCache) return dbCache;
 
+  // 1. Try runtime DB_FILE (e.g., /tmp/haikai_data/haikai_db.json or ./data/haikai_db.json)
   if (fs.existsSync(DB_FILE)) {
     try {
       const raw = fs.readFileSync(DB_FILE, 'utf-8');
       dbCache = JSON.parse(raw);
       return dbCache!;
     } catch (err) {
-      console.error('Failed to parse haikai_db.json, backing up and reinitializing', err);
+      console.error('[DB] Failed to parse haikai_db.json from DB_FILE:', err);
     }
   }
 
-  // Initialize DB from defaults
+  // 2. Try bundled repo DB file if running on serverless/read-only
+  if (DB_FILE !== BUNDLED_DB_FILE && fs.existsSync(BUNDLED_DB_FILE)) {
+    try {
+      const raw = fs.readFileSync(BUNDLED_DB_FILE, 'utf-8');
+      dbCache = JSON.parse(raw);
+      // Best-effort cache to writable location
+      saveDatabase(dbCache!);
+      return dbCache!;
+    } catch (err) {
+      console.error('[DB] Failed to parse haikai_db.json from BUNDLED_DB_FILE:', err);
+    }
+  }
+
+  // 3. Initialize DB from defaults
   const newDb: DatabaseSchema = {
     settings: DEFAULT_SETTINGS,
     mangaRelease: DEFAULT_MANGA_RELEASE,
@@ -151,9 +187,16 @@ function loadDatabase(): DatabaseSchema {
 
 export function saveDatabase(data: DatabaseSchema): void {
   dbCache = data;
-  const tempFile = `${DB_FILE}.tmp.${Date.now()}`;
-  fs.writeFileSync(tempFile, JSON.stringify(data, null, 2), 'utf-8');
-  fs.renameSync(tempFile, DB_FILE);
+  try {
+    if (!fs.existsSync(DATA_DIR)) {
+      fs.mkdirSync(DATA_DIR, { recursive: true });
+    }
+    const tempFile = `${DB_FILE}.tmp.${Date.now()}`;
+    fs.writeFileSync(tempFile, JSON.stringify(data, null, 2), 'utf-8');
+    fs.renameSync(tempFile, DB_FILE);
+  } catch (err) {
+    console.warn('[DB] Could not persist database file to disk (read-only environment):', err);
+  }
 }
 
 export function getDatabase(): DatabaseSchema {
