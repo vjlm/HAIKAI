@@ -1,6 +1,6 @@
 {
-  "name": "HAIKAI: The Sea of Ash (灰海) — Official Anime Website",
-  "description": "Official cinematic website for the dark fantasy anime and manga franchise HAIKAI: The Sea of Ash (灰海). Explore the world, characters, the Oath system, classified archives, and visual records.",
+  "name": "HAIKAI — The Sea of Ash",
+  "description": "Enter the world of HAIKAI — a dark fantasy mystery surrounding the Sea of Ash, the First Flood, and a civilization built on forgotten truth.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

@@ -1,0 +1,646 @@
+{
+  "settings": {
+    "siteTitle": "HAIKAI — The Sea of Ash",
+    "siteSubtitle": "THE SEA OF ASH",
+    "japaneseTitle": "灰海",
+    "tagline": "“Was this world ever meant to be saved?”",
+    "ctaPrimaryLabel": "[ ENTER THE WORLD → ]",
+    "ctaSecondaryLabel": "[ MEET THE CHARACTERS ]",
+    "heroNotice": "PRE-FLOOD RECKONING",
+    "socialLinks": {
+      "x": "https://x.com/haikai_official",
+      "instagram": "https://instagram.com/haikai_manga",
+      "youtube": "https://youtube.com",
+      "discord": "https://discord.gg"
+    },
+    "seoDescription": "Enter the world of HAIKAI — a dark fantasy mystery surrounding the Sea of Ash, the First Flood, and a civilization built on forgotten truth.",
+    "updatedAt": "2026-09-25T04:46:52.328Z"
+  },
+  "mangaRelease": {
+    "id": "manga-vol-01",
+    "title": "HAIKAI — THE SEA OF ASH",
+    "volumeNumber": "Volume 01",
+    "subtitle": "FIRST PUBLICATION · CHAPTERS 01–05",
+    "chapterRange": "Chapters 01–05: The Salvage Boy to The War Records",
+    "description": "Seventeen-year-old salvage diver Nero Vale pulls an impossible pre-Flood bronze cylinder from the midnight shelf, triggering an imperial manhunt that shatters three thousand years of Crownlands peace.",
+    "coverImage": "/assets/manga_vol_01_cover.webp",
+    "releaseAt": "2026-09-27T04:47:11.281Z",
+    "mangaUrl": "https://haikai-manga.official.jp/read/volume-01",
+    "status": "Scheduled",
+    "openInNewTab": true,
+    "createdAt": "2026-09-25T04:46:52.328Z",
+    "updatedAt": "2026-09-25T04:47:11.286Z"
+  },
+  "regions": [
+    {
+      "id": "crownlands",
+      "number": "REGION 01",
+      "name": "THE CROWNLANDS",
+      "japanese": "王都諸州",
+      "tagline": "The largest human civilization. Organized. Wealthy. Militarily powerful.",
+      "visualSummary": "Massive stone bastions and sea-walls rising from black foam. Warm incandescent gaslamps and ash-steam plumes cutting through the cold oceanic gloom.",
+      "quote": "“What cannot be controlled must be contained.”",
+      "government": "MONARCHY",
+      "powerSource": "ASH INDUSTRY",
+      "ideology": "CONTROL",
+      "description": "Constructed upon the only known tectonic plate unswallowed by the First Flood. The Crownlands maintain order through absolute centralization, maritime naval cordons, and the monopoly on raw ash processing.",
+      "depthRecord": "Coastline: 0m | Bastion Heights: +180m",
+      "hazards": [
+        "Classified Cordon Patrols",
+        "Ash Furnace Slag Runoff",
+        "The High Inquisitor’s Cartels"
+      ],
+      "keyLocations": [
+        "The High Iron Citadel",
+        "Great Cordon Wall",
+        "Bastion of the Cartographers"
+      ],
+      "status": "Published",
+      "displayOrder": 0
+    },
+    {
+      "id": "hollow-forest",
+      "number": "REGION 02",
+      "name": "THE HOLLOW FOREST",
+      "japanese": "虚ろの樹海",
+      "tagline": "Ancient roots older than recorded history, cradling forgotten human settlements.",
+      "visualSummary": "Enormous petrified banyan roots spanning kilometers across black bogs. Faint amber oil lanterns hanging from hollowed trunk dwellings; silver mist drifting at knee level.",
+      "quote": "“A person dies twice. Once when the heart stops. Once when nobody remembers their name.”",
+      "government": "AUTONOMOUS CLANS",
+      "powerSource": "TREE SAP & WOOD RESIN",
+      "ideology": "MEMORY & COMMUNION",
+      "description": "Deep within the mist, thousands dwell inside giant cedar trunks whose bark repels ash sedimentation. Here, memory is currency, and every resident wears engraved wooden nameplates so they cannot be swallowed by the fog.",
+      "depthRecord": "Forest Floor: -45m below sea level",
+      "hazards": [
+        "The Erasure Fog",
+        "Root Hollow Sinkholes",
+        "Silent Harvesters"
+      ],
+      "keyLocations": [
+        "The Village of Names",
+        "The Pale Bough Archive",
+        "Sunken Shrines of the Canopy"
+      ],
+      "status": "Published",
+      "displayOrder": 1
+    },
+    {
+      "id": "glass-desert",
+      "number": "REGION 03",
+      "name": "THE GLASS DESERT",
+      "japanese": "玻璃の砂漠",
+      "tagline": "A silent expanse of vitrified silica mirroring cold stellar constellations.",
+      "visualSummary": "Undulating dunes of translucent obsidian sand. Starlight and cold twin moons reflecting off polished dunes like black mirrors. Underground cavern dwellings carved beneath sheets of melted quartz.",
+      "quote": "“The Sun is imprisoned.”",
+      "government": "SOLAR HERMITS & MINING GUILDS",
+      "powerSource": "THERMAL QUARTZ PRISMS",
+      "ideology": "PURIFICATION",
+      "description": "The product of an ancient thermal catastrophe during the First Flood. Inhabitants live subterranean lives away from daytime radiation, emerging only under moonlit skies to harvest pristine vitreous glass and deep aquifer brine.",
+      "depthRecord": "Subterranean Vaults: -320m",
+      "hazards": [
+        "Razor Dune Storms",
+        "Thermal Prism Bursts",
+        "Subsurface Cavitations"
+      ],
+      "keyLocations": [
+        "The Obsidian Chasm",
+        "Mirror Wells of Ksar",
+        "The Sun Vault"
+      ],
+      "status": "Published",
+      "displayOrder": 2
+    },
+    {
+      "id": "drowned-kingdom",
+      "number": "REGION 04",
+      "name": "THE DROWNED KINGDOM",
+      "japanese": "沈没の古王国",
+      "tagline": "Submerged cyclopean towers illuminated by cold abyssal bioluminescence.",
+      "visualSummary": "Shattered marble colonnades and monumental temples submerged hundreds of meters beneath black tides. Cold cyan bio-glow pulsing from reef polyps along ruined arches.",
+      "quote": "“They remember a history humanity forgot.”",
+      "government": "THE NERAI CONCLAVE",
+      "powerSource": "ABYSSAL PRESSURE VENTS",
+      "ideology": "WITNESS",
+      "description": "Home to the Nerai, an amphibious subspecies that mutated following prolonged immersion. They guard pre-Flood architectural vaults and carved stele containing records of the world before the black water rose.",
+      "depthRecord": "Abyssal Shelf: -850m to -2,200m",
+      "hazards": [
+        "Crushing Hydrostatic Pressure",
+        "Nerai Sentinel Spears",
+        "Black Current Vortices"
+      ],
+      "keyLocations": [
+        "The Sunken Basilic",
+        "Spire of the First Cartographers",
+        "The Valve Trench"
+      ],
+      "status": "Published",
+      "displayOrder": 3
+    },
+    {
+      "id": "the-end",
+      "number": "REGION 05",
+      "name": "THE END",
+      "japanese": "終局の界線",
+      "tagline": "An impossible event horizon where the black ocean ceases to follow physics.",
+      "visualSummary": "A flat, seamless horizon under a sky stripped of stars. No landmass, no waves. A towering dark monolithic form in the far distance that seems neither near nor far.",
+      "quote": "“There is nothing beyond it. At least, that is what the Crownlands say.”",
+      "government": "NONE // FORBIDDEN PERIMETER",
+      "powerSource": "UNKNOWN // NULL FIELD",
+      "ideology": "TABOO",
+      "description": "Every naval fleet dispatched beyond latitude 82° South vanished without distress transmission. Crownlands maps terminate here with heavy black ink bars. Yet deep divers report hearing footsteps from beyond the water edge.",
+      "depthRecord": "Undefined // Measurements return null",
+      "hazards": [
+        "Spatial Inversion",
+        "Sensory Vacuum",
+        "Absolute Loss of Direction"
+      ],
+      "keyLocations": [
+        "The Silent Horizon",
+        "The Pillar Without Shadow",
+        "Boundary Marker Zero"
+      ],
+      "status": "Published",
+      "displayOrder": 4
+    }
+  ],
+  "characters": [
+    {
+      "id": "nero-vale",
+      "name": "NERO VALE",
+      "japanese": "ネロ・ヴェイル",
+      "age": 17,
+      "role": "Salvage Diver",
+      "origin": "The Outer Shelf (Crownlands Coast)",
+      "quote": "“He listens more than he speaks.”",
+      "appearance": "Lean, quiet coastal youth with dark salt-streaked hair, weathered diving vest with brass clips, deep gray eyes that have looked into too much abyss.",
+      "description": "Nero does not dream of becoming a hero. He wants a normal life where he does not have to pull drowned relics out of midnight trenches to pay his brother’s oxygen tax.",
+      "highlight": "He knows when the tide is lying before the water even moves.",
+      "knownFor": [
+        "Observation",
+        "Patience",
+        "Avoiding difficult conversations",
+        "Uncompromising loyalty"
+      ],
+      "classifiedNote": "Lung capacity tests reveal 340% baseline expansion following dive 402. Recovery of pre-Flood artifact #09 was never officially logged in Crownlands registry.",
+      "status": "Published",
+      "displayOrder": 0
+    },
+    {
+      "id": "eira-voss",
+      "name": "EIRA VOSS",
+      "japanese": "エイラ・ヴォス",
+      "age": 19,
+      "role": "Crownlands Military Cartographer",
+      "origin": "The High Iron Citadel",
+      "quote": "“She learned very young that showing weakness allows other people to decide what you are allowed to feel.”",
+      "appearance": "Tailored dark wool officer’s coat with silver frogging, high collar, leather map folio strapped across her chest. Cold pale eyes and rigid posture.",
+      "description": "Assigned to survey the anomalous expansion of the Sea of Ash. Eira carries a private ledger containing handwritten geographic contradictions that would get her executed for high treason if discovered.",
+      "highlight": "She remembers everything.",
+      "knownFor": [
+        "Photographic memory",
+        "Cartographic precision",
+        "Stoic composure",
+        "Masking exhaustion"
+      ],
+      "classifiedNote": "Third daughter of General Voss. Reassigned to the boundary perimeter after refusing to falsify the Southern Shoreline retreat tables.",
+      "status": "Published",
+      "displayOrder": 1
+    },
+    {
+      "id": "cael-arden",
+      "name": "CAEL ARDEN",
+      "japanese": "カエル・アーデン",
+      "age": 24,
+      "role": "Former Crownlands Soldier",
+      "origin": "Fortress City 03 (Decommissioned)",
+      "quote": "“He tells stories because silence remembers too much.”",
+      "appearance": "Worn gray garrison tunic, unbuttoned collar, scarred knuckles, lazy self-deprecating smirk that never quite reaches his bloodshot eyes.",
+      "description": "A decorated veteran of the Third Cordon Suppression who walked away from the service with a limp, a rusted canteen, and memories he drowns in cheap coastal spirits.",
+      "highlight": "He knows what Eira doesn’t want to admit, and what Nero is too young to fear.",
+      "knownFor": [
+        "Improvised combat",
+        "Dark humor",
+        "Feigned ignorance",
+        "Uncanny alertness"
+      ],
+      "classifiedNote": "ACCESS RESTRICTED // COURT-MARTIAL DOSSIER 1148-B // SUBJECT WITNESSED BREACH AT CORDON FORTRESS ZERO // DISHONORABLE DISCHARGE PENDING EXECUTION STAY",
+      "status": "Published",
+      "displayOrder": 2
+    },
+    {
+      "id": "mira",
+      "name": "MIRA",
+      "japanese": "ミラ",
+      "age": 16,
+      "role": "Name Collector",
+      "origin": "The Hollow Forest",
+      "quote": "“If you remember someone's name, they aren't completely gone.”",
+      "appearance": "Layered linen robes dyed with cedar bark, a necklace strung with dozens of hand-carved wooden name tags, large curious amber eyes.",
+      "description": "She travels between the edge of the woods and coastal markets, asking strangers for their names and the names of those they loved who were swallowed by the sea. She never forgets a single syllable.",
+      "highlight": "She does not fear the ash because she believes names anchor the soul to the earth.",
+      "knownFor": [
+        "Linguistic intuition",
+        "Gentle empathy",
+        "Fearlessness in darkness",
+        "Woodcarving"
+      ],
+      "classifiedNote": "Possesses no Crownlands census designation. Can speak dialect words that match pre-Flood dialect patterns recovered from the Nerai shelf.",
+      "status": "Published",
+      "displayOrder": 3
+    },
+    {
+      "id": "ren-vessel",
+      "name": "REN VESSEL",
+      "japanese": "レン・ヴェッセル",
+      "age": 31,
+      "role": "Origin: Unknown",
+      "origin": "Beyond the Southern Cordon",
+      "quote": "“People say they want the truth. They don't.”",
+      "appearance": "Almost entirely shadowed figure in an antique heavy diving cowl that hides his facial features. Moves with unnerving economy of motion.",
+      "description": "Ren believes humanity has made one fundamental mistake: mistaking survival for purpose. He operates in the spaces between factions, nudging the world toward an inevitable confrontation with the sea’s origin.",
+      "highlight": "He does not hate humanity. That is what makes him terrifying.",
+      "knownFor": [
+        "Philosophical certainty",
+        "Mastery of broken oaths",
+        "Absence of pulse",
+        "Patience across decades"
+      ],
+      "classifiedNote": "NO RECORD FOUND. Earliest recorded sighting matches photographic plate from Crownlands maritime expedition in year 2884 (116 years ago). Physical appearance unchanged.",
+      "status": "Published",
+      "displayOrder": 4
+    }
+  ],
+  "storyArcs": [
+    {
+      "id": "arc-01",
+      "number": "ARC 01",
+      "arcNumber": 1,
+      "title": "THE SALVAGE BOY",
+      "japanese": "回収の少年",
+      "synopsis": "On the outer reefs of the Crownlands, seventeen-year-old Nero Vale recovers an impossible bronze cylinder from depth 380m: an artifact bearing writing that matches no known language in the imperial archive.",
+      "quote": "“Leave it in the deep, boy. Some things were thrown away on purpose.”",
+      "depthLevel": "0m – 380m",
+      "keyArtifact": "Sealed Bronze Capsule #09",
+      "status": "Published",
+      "displayOrder": 0
+    },
+    {
+      "id": "arc-02",
+      "number": "ARC 02",
+      "arcNumber": 2,
+      "title": "THE CROWN MAP",
+      "japanese": "王都の海図",
+      "synopsis": "Imperial cartographer Eira Voss arrives at the outer outpost under royal mandate. When Nero’s artifact displays coastline coordinates that contradict three centuries of Crown maps, their uneasy partnership begins.",
+      "quote": "“If my map is wrong, then seventy thousand people died defending empty water.”",
+      "depthLevel": "Bastion Shoreline",
+      "keyArtifact": "The Imperial Cordon Projection",
+      "status": "Published",
+      "displayOrder": 1
+    },
+    {
+      "id": "arc-03",
+      "number": "ARC 03",
+      "arcNumber": 3,
+      "title": "THE FOREST",
+      "japanese": "樹海の霧",
+      "synopsis": "Pursued by Crownlands inquisitorial skiffs, the pair flees into the mist of the Hollow Forest, meeting the eccentric name-collector Mira and discovering that the forest trees are feeding on memories discarded by the sea.",
+      "quote": "“They don’t drown in water here. They drown in forgetting.”",
+      "depthLevel": "-45m Mist Basin",
+      "keyArtifact": "Plaque of the Hundred Names",
+      "status": "Published",
+      "displayOrder": 2
+    },
+    {
+      "id": "arc-04",
+      "number": "ARC 04",
+      "arcNumber": 4,
+      "title": "THE WAR RECORDS",
+      "japanese": "戦時秘録",
+      "synopsis": "Disgraced veteran Cael Arden joins the company. In the burnt ruins of Fortress Zero, Cael reveals what the Crownlands military was actually fighting during the Third Cordon War—not pirates, but expeditions attempting to leave.",
+      "quote": "“The wall wasn’t built to keep the sea out. It was built to keep us in.”",
+      "depthLevel": "Fortress Zero Vaults",
+      "keyArtifact": "Redacted Suppression Log 412",
+      "status": "Published",
+      "displayOrder": 3
+    },
+    {
+      "id": "arc-05",
+      "number": "ARC 05",
+      "arcNumber": 5,
+      "title": "THE GLASS DESERT",
+      "japanese": "玻璃の熱砂",
+      "synopsis": "Crossing the moonlit vitrified dunes, the company seeks the Hermit of Ksar to decode the cylinder. Underneath the glass plates, they find the petrified skeletons of pre-Flood engines that did not run on ash, but sunlight.",
+      "quote": "“Ash isn’t fuel. Ash is the charred remainder of whatever was burned to make this prison.”",
+      "depthLevel": "-320m Vault Chamber",
+      "keyArtifact": "Solar Prism Core",
+      "status": "Published",
+      "displayOrder": 4
+    },
+    {
+      "id": "arc-06",
+      "number": "ARC 06",
+      "arcNumber": 6,
+      "title": "THE DROWNED KINGDOM",
+      "japanese": "深海の旧都",
+      "synopsis": "Nero undertakes a dive beyond human biological limits into the sunken cyclopean ruins of the Nerai. In the drowned cathedral, the Nerai Elders show him the stone carving of the First Flood: the water did not rise; the earth was pushed down.",
+      "quote": "“You call it history. We call it yesterday’s wound.”",
+      "depthLevel": "-1,400m Abyssal Shelf",
+      "keyArtifact": "The Stele of the Depths",
+      "status": "Published",
+      "displayOrder": 5
+    },
+    {
+      "id": "arc-07",
+      "number": "ARC 07",
+      "arcNumber": 7,
+      "title": "THE BROKEN OATH",
+      "japanese": "破られた誓約",
+      "synopsis": "Ren Vessel appears to claim the key. An impossible choice forces Cael Arden to speak the forbidden names of Fortress Zero, triggering the backlash of his oath in a desperate stand to buy the others time to escape.",
+      "quote": "“I knew the price when I swore it. I’d swear it again.”",
+      "depthLevel": "The Crushed Gate",
+      "keyArtifact": "Calcified Oath Shard",
+      "status": "Published",
+      "displayOrder": 6
+    },
+    {
+      "id": "arc-08",
+      "number": "ARC 08",
+      "arcNumber": 8,
+      "title": "THE FIRST PEOPLE",
+      "japanese": "原初の民",
+      "synopsis": "The truth beneath the Sea of Ash is uncovered: humanity was never indigenous to this basin. Three thousand years ago, an outside world constructed this sea as a containment quarantine after an existential failure.",
+      "quote": "“We were not saved. We were quarantined.”",
+      "depthLevel": "-3,200m Deep Trench",
+      "keyArtifact": "The Quarantine Seal",
+      "status": "Published",
+      "displayOrder": 7
+    },
+    {
+      "id": "arc-09",
+      "number": "ARC 09",
+      "arcNumber": 9,
+      "title": "THE END",
+      "japanese": "終局への航海",
+      "synopsis": "The remaining crew sails toward the forbidden perimeter. The Crownlands Grand Fleet mobilizes in a final desperate blockade to preserve the fragile illusion of their peaceful civilization.",
+      "quote": "“If you break the seal, the outside world will look upon us again.”",
+      "depthLevel": "Boundary Coordinate Zero",
+      "keyArtifact": "The Boundary Keystone",
+      "status": "Published",
+      "displayOrder": 8
+    },
+    {
+      "id": "arc-10",
+      "number": "ARC 10",
+      "arcNumber": 10,
+      "title": "WHAT DESERVES TO SURVIVE?",
+      "japanese": "何が残るべきか",
+      "synopsis": "Standing before the final barrier, the choice is placed into human hands: maintain the peaceful illusion and save millions from annihilation, or reveal the terrifying truth of existence at the risk of losing everything.",
+      "quote": "“Truth isn’t automatically freedom. But a cage with a painted sky is still a cage.”",
+      "depthLevel": "Beyond Horizon",
+      "keyArtifact": "The Diver’s Knife",
+      "status": "Published",
+      "displayOrder": 9
+    }
+  ],
+  "mysteries": [
+    {
+      "id": "file-001",
+      "fileNumber": "ARCHIVE // FILE 001",
+      "title": "THE STONE DOOR",
+      "japanese": "石の扉",
+      "classification": "RESTRICTED // HIGH CORDON",
+      "description": "A door approximately twenty centimeters tall discovered in the bedrock beneath Bastion 04. There is no void or mechanism behind it; the rear is solid granite. Yet at low tide, vocal vibrations emerge from the stone fissure.",
+      "dialogue": [
+        {
+          "speaker": "VOICE FROM DOOR",
+          "text": "“You're late.”"
+        },
+        {
+          "speaker": "DIVER NERO",
+          "text": "“Do I know you?”"
+        },
+        {
+          "speaker": "VOICE FROM DOOR",
+          "text": "“Not anymore.”"
+        }
+      ],
+      "inconsistencies": [
+        "Acoustic resonance matches vocal cords of an adult female, but records show no mining expeditions in this sector.",
+        "Spectroscopic analysis reveals the stone door was carved before the sea was formed."
+      ],
+      "redactedLore": "Door matches the micro-apertures built into pre-Flood environmental testing vaults. The subject speaking claims to be transmitting from the year 001.",
+      "status": "Published",
+      "displayOrder": 0
+    },
+    {
+      "id": "file-002",
+      "fileNumber": "ARCHIVE // FILE 002",
+      "title": "THE FIRST FLOOD",
+      "japanese": "第一次大洪水",
+      "classification": "OFFICIAL HISTORY // DISCREPANCY AUDIT",
+      "description": "Crownlands imperial texts state the First Flood occurred due to celestial punishment that cleansed the sinful ancients with black seawater, leaving only the righteous on the Crown plate.",
+      "inconsistencies": [
+        "Deep sedimentation cores from the Glass Desert show no evidence of rain or tsunami deposition.",
+        "Salinity analysis reveals the Sea of Ash is not seawater: it is chemically identical to suspended cellular waste and dissolved bone.",
+        "The water level has not risen since year 100; it remains calibrated to exactly +0.00m at every shoreline worldwide."
+      ],
+      "redactedLore": "The Flood was deliberate hydrodynamic containment. The black color comes from the disintegration of eighteen major civilizations inside the enclosure.",
+      "status": "Published",
+      "displayOrder": 1
+    },
+    {
+      "id": "file-003",
+      "fileNumber": "ARCHIVE // FILE 003",
+      "title": "THE MISSING YEARS",
+      "japanese": "喪失の十二年",
+      "classification": "INCIDENT LOG // MEDICAL ISOLATION",
+      "description": "In year 2988, Salvage Diver Kenneth Var entered the Shelf Trench at depth 820m. His support crew observed his lifeline taut for exactly seventy-two hours before hauling him up. Upon resuscitation, he maintained he had lived in an inland agricultural valley for twelve years, married, and buried two children.",
+      "inconsistencies": [
+        "Subject was biologically aged by 12 years: teeth enamel wear, cellular shortening, and osteoarthritis verified by medical staff.",
+        "Carried an iron coin stamped with an unknown monarch whose reign does not appear in any Crownlands genealogy."
+      ],
+      "redactedLore": "Time beneath the ash sea does not flow at constant velocity. In localized pressure anomalies, time is stationary or dilated by factor 1,460.",
+      "status": "Published",
+      "displayOrder": 2
+    },
+    {
+      "id": "file-004",
+      "fileNumber": "ARCHIVE // FILE 004",
+      "title": "THE END",
+      "japanese": "終局点調査録",
+      "classification": "MAXIMUM ARCHIVE TABOO",
+      "description": "No expedition sent toward latitude 82° South has ever returned. The Crownlands maintain that beyond the boundary lies absolute void. The Nerai refuse to discuss the region, referring to it only as \"The Room of the Makers\".",
+      "inconsistencies": [
+        "Radio-telegraph signals dispatched south do not fade; they reflect back instantaneously with zero signal degradation, as if hitting a glass mirror.",
+        "Compass needles do not point north when approaching the boundary; they point directly up toward the zenith."
+      ],
+      "redactedLore": "The boundary is a physical perimeter wall constructed of seamless carbon-graphene alloy extending 14,000 meters into the atmosphere and descending to the mantle.",
+      "status": "Published",
+      "displayOrder": 3
+    }
+  ],
+  "galleryItems": [
+    {
+      "id": "gal-01",
+      "title": "The Solitary Salvager",
+      "japanese": "孤高の潜水士",
+      "category": "CHARACTERS",
+      "description": "Nero Vale preparing for descent at the shelf break. The worn brass of his dive harness reflects the pale cold light of the twin moons.",
+      "aspectRatio": "3:4",
+      "visualType": "character_portrait",
+      "status": "Published",
+      "displayOrder": 0
+    },
+    {
+      "id": "gal-02",
+      "title": "The High Citadel of Iron",
+      "japanese": "鉄の都の防波堤",
+      "category": "LANDSCAPES",
+      "description": "The monumental stone ramparts of the Crownlands towering over the black surf. Smoke from the ash-furnaces blurs the horizon.",
+      "aspectRatio": "16:9",
+      "visualType": "landscape_citadel",
+      "status": "Published",
+      "displayOrder": 1
+    },
+    {
+      "id": "gal-03",
+      "title": "Midnight on the Sea of Ash",
+      "japanese": "灰海の真夜中",
+      "category": "THE SEA",
+      "description": "A lone wooden skiff adrift on pitch-black waters. Silver ash flakes fall like cold snow across the glassy obsidian surface.",
+      "aspectRatio": "16:9",
+      "visualType": "ocean_night",
+      "status": "Published",
+      "displayOrder": 2
+    },
+    {
+      "id": "gal-04",
+      "title": "Eira Voss in the Cartography Vault",
+      "japanese": "地図室の記録官",
+      "category": "CHARACTERS",
+      "description": "Eira examining an unauthorized parchment chart under the dim yellow light of an oil lamp, measuring the shifting shoreline.",
+      "aspectRatio": "3:4",
+      "visualType": "character_eira",
+      "status": "Published",
+      "displayOrder": 3
+    },
+    {
+      "id": "gal-05",
+      "title": "The Sunken Temple of the Nerai",
+      "japanese": "沈没神殿の青光",
+      "category": "RUINS",
+      "description": "Cold cyan bioluminescence filtering through cyclopean stone columns eight hundred meters below the sea surface.",
+      "aspectRatio": "16:9",
+      "visualType": "ruins_nerai",
+      "status": "Published",
+      "displayOrder": 4
+    },
+    {
+      "id": "gal-06",
+      "title": "The Cordon Defense Line",
+      "japanese": "防衛線の残骸",
+      "category": "WAR",
+      "description": "Rusted artillery emplacements and shattered iron booms at Fortress Zero, half-buried under accumulating drifts of fine black ash.",
+      "aspectRatio": "16:9",
+      "visualType": "war_ruins",
+      "status": "Published",
+      "displayOrder": 5
+    },
+    {
+      "id": "gal-07",
+      "title": "The Mirror of Glass Dunes",
+      "japanese": "ガラス砂漠の星影",
+      "category": "LANDSCAPES",
+      "description": "Vitrified obsidian sand reflecting the starry constellations in absolute crystalline clarity.",
+      "aspectRatio": "16:9",
+      "visualType": "landscape_glass",
+      "status": "Published",
+      "displayOrder": 6
+    },
+    {
+      "id": "gal-08",
+      "title": "The Boundary Keystone",
+      "japanese": "境界の礎石",
+      "category": "CONCEPT ART",
+      "description": "Conceptual blueprint of the perimeter barrier dividing the known basin from the outside world.",
+      "aspectRatio": "4:3",
+      "visualType": "concept_monolith",
+      "status": "Published",
+      "displayOrder": 7
+    }
+  ],
+  "admin": {
+    "passwordHash": "dce06d9712c9fd4547326f833c2694629fce78d6b544a74737d18c5e82a4e9facda4e5a2b0b33aaa8eecf8510f2747f0dbfb789648a0524073873bc6247246f6",
+    "salt": "1ad03c1fc6b581519d8827228f2c6373"
+  },
+  "sessions": {
+    "3f17b72a1a9d6322c063803f35cf3f392c55de0f7ab2ea3033ece502d8337f2b": {
+      "username": "Owner",
+      "expiresAt": 1790916422039
+    },
+    "10732925ae52818e5ce348828c57bd2fdc597da97a767ba3af96307a80526cac": {
+      "username": "Owner",
+      "expiresAt": 1790916431285
+    },
+    "31fcaa67d71c2f139cc4037c0d2efd8a37e07a84b118537cc886da9bd11cdaf8": {
+      "username": "Owner",
+      "expiresAt": 1790916437957
+    }
+  },
+  "auditLogs": [
+    {
+      "id": "bb41b188-1e28-44f5-9b67-1d76d5e8b09b",
+      "timestamp": "2026-09-25T04:47:17.958Z",
+      "user": "Owner",
+      "action": "LOGIN_SUCCESS",
+      "contentType": "Auth",
+      "contentId": "31fcaa67",
+      "details": "Owner logged in successfully"
+    },
+    {
+      "id": "77350bce-2849-43a1-885d-d8af6c8c202a",
+      "timestamp": "2026-09-25T04:47:11.286Z",
+      "user": "Owner",
+      "action": "UPDATE_MANGA",
+      "contentType": "MangaRelease",
+      "contentId": "manga-vol-01",
+      "details": "Updated release schedule: Scheduled at 2026-09-27T04:47:11.281Z"
+    },
+    {
+      "id": "ae269959-3192-45bc-805a-fc8042e5b726",
+      "timestamp": "2026-09-25T04:47:11.274Z",
+      "user": "Owner",
+      "action": "FORCE_RELEASE_MANGA",
+      "contentType": "MangaRelease",
+      "contentId": "manga-vol-01",
+      "details": "Volume 01 immediately released"
+    },
+    {
+      "id": "7105363b-8e0e-4f5b-9032-f63ceb276784",
+      "timestamp": "2026-09-25T04:47:11.260Z",
+      "user": "Owner",
+      "action": "LOGIN_SUCCESS",
+      "contentType": "Auth",
+      "contentId": "10732925",
+      "details": "Owner logged in successfully"
+    },
+    {
+      "id": "0ec7918d-ac90-4866-adca-ad34a96044dc",
+      "timestamp": "2026-09-25T04:47:02.033Z",
+      "user": "Owner",
+      "action": "LOGIN_SUCCESS",
+      "contentType": "Auth",
+      "contentId": "3f17b72a",
+      "details": "Owner logged in successfully"
+    },
+    {
+      "id": "bdd905c2-7200-4105-afdc-7e2dbb8468e6",
+      "timestamp": "2026-09-25T04:46:52.418Z",
+      "user": "System",
+      "action": "INITIALIZE",
+      "contentType": "Database",
+      "contentId": "root",
+      "details": "Initial database schema and canonical lore seeded."
+    }
+  ]
+}

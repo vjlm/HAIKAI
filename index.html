@@ -2,18 +2,67 @@
 <html lang="ja" class="dark scroll-smooth">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>灰海 — HAIKAI: THE SEA OF ASH | Official Website</title>
-    <meta name="description" content="Official cinematic website for the dark fantasy anime and manga franchise HAIKAI: The Sea of Ash (灰海). Explore the world, characters, the Oath system, classified archives, and visual records." />
-    <meta property="og:title" content="灰海 — HAIKAI: THE SEA OF ASH | Official Website" />
-    <meta property="og:description" content="Official cinematic website for the dark fantasy anime and manga franchise HAIKAI: The Sea of Ash (灰海). Explore the world, characters, the Oath system, classified archives, and visual records." />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>HAIKAI — The Sea of Ash</title>
+    <meta name="description" content="Enter the world of HAIKAI — a dark fantasy mystery surrounding the Sea of Ash, the First Flood, and a civilization built on forgotten truth." />
+    
+    <!-- Canonical & Social Metadata -->
+    <link rel="canonical" href="https://haikai.anime/" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="alternate icon" href="/favicon.svg" />
+    
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="HAIKAI — The Sea of Ash" />
+    <meta property="og:title" content="HAIKAI — The Sea of Ash" />
+    <meta property="og:description" content="Enter the world of HAIKAI — a dark fantasy mystery surrounding the Sea of Ash, the First Flood, and a civilization built on forgotten truth." />
+    <meta property="og:url" content="https://haikai.anime/" />
+    <meta property="og:image" content="https://haikai.anime/manga-cover-vol1.svg" />
+
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="HAIKAI — The Sea of Ash" />
+    <meta name="twitter:description" content="Enter the world of HAIKAI — a dark fantasy mystery surrounding the Sea of Ash, the First Flood, and a civilization built on forgotten truth." />
+    <meta name="twitter:image" content="https://haikai.anime/manga-cover-vol1.svg" />
+
+    <!-- Google Fonts Preconnect -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=Shippori+Mincho:wght@400;500;600;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Schema.org Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "CreativeWorkSeries",
+          "name": "HAIKAI — The Sea of Ash",
+          "alternateName": "灰海",
+          "headline": "Enter the world of HAIKAI — a dark fantasy mystery surrounding the Sea of Ash, the First Flood, and a civilization built on forgotten truth.",
+          "genre": ["Dark Fantasy", "Mystery", "Anime", "Manga"],
+          "inLanguage": ["ja", "en"],
+          "url": "https://haikai.anime/",
+          "author": {
+            "@type": "Organization",
+            "name": "HAIKAI Production Committee"
+          }
+        },
+        {
+          "@type": "BookSeries",
+          "name": "HAIKAI Manga Series",
+          "hasPart": [
+            {
+              "@type": "PublicationIssue",
+              "issueNumber": "Volume 01",
+              "name": "HAIKAI — The Sea of Ash: Volume 01",
+              "datePublished": "2026-09-27T12:00:00Z"
+            }
+          ]
+        }
+      ]
+    }
+    </script>
   </head>
-  <body class="bg-[#050608] text-[#c3c7cb] antialiased selection:bg-[#9e2a2b] selection:text-white overflow-x-hidden">
+  <body class="bg-[#050608] text-[#c3c7cb] antialiased selection:bg-[#9e2a2b] selection:text-white overflow-x-hidden min-h-[100dvh]">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
