@@ -302,9 +302,11 @@ apiRouter.get(['/admin/overview', '/admin/dashboard-stats'], requireAdmin, (_req
 // Full database retrieval for admin
 apiRouter.get('/admin/content', requireAdmin, (_req: Request, res: Response) => {
   const db = getDatabase();
+  const rawCountdowns = db.countdowns && db.countdowns.length > 0 ? db.countdowns : [db.mangaRelease];
   res.json({
     settings: db.settings,
     mangaRelease: db.mangaRelease,
+    countdowns: rawCountdowns,
     regions: db.regions,
     characters: db.characters,
     storyArcs: db.storyArcs,
