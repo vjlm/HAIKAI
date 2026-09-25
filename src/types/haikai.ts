@@ -57,6 +57,8 @@ export interface MangaRelease {
   mangaUrl: string;
   status: 'Scheduled' | 'Released' | 'Hidden';
   openInNewTab?: boolean;
+  category?: string;
+  isFeatured?: boolean;
   serverTime?: string;
   isReleased?: boolean;
   createdAt?: string;
@@ -169,6 +171,7 @@ export interface PublicContentResponse {
   serverTime: string;
   settings: SiteSettings;
   mangaRelease: MangaRelease;
+  countdowns?: MangaRelease[];
   regions: Region[];
   characters: Character[];
   storyArcs: StoryArc[];

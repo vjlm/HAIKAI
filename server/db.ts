@@ -25,6 +25,7 @@ import {
 export interface DatabaseSchema {
   settings: SiteSettings;
   mangaRelease: MangaRelease;
+  countdowns?: MangaRelease[];
   regions: Region[];
   characters: Character[];
   storyArcs: StoryArc[];
@@ -166,8 +167,11 @@ function loadDatabase(): DatabaseSchema {
       dbCache = JSON.parse(raw);
       if (!dbCache!.trailers || dbCache!.trailers.length === 0) {
         dbCache!.trailers = (TRAILERS || []).map((t, i) => ({ ...t, status: 'Published', displayOrder: i }));
-        saveDatabase(dbCache!);
       }
+      if (!dbCache!.countdowns || dbCache!.countdowns.length === 0) {
+        dbCache!.countdowns = [{ ...dbCache!.mangaRelease, isFeatured: true }];
+      }
+      saveDatabase(dbCache!);
       return dbCache!;
     } catch (err) {
       console.error('[DB] Failed to parse haikai_db.json from DB_FILE:', err);
@@ -182,6 +186,9 @@ function loadDatabase(): DatabaseSchema {
       if (!dbCache!.trailers || dbCache!.trailers.length === 0) {
         dbCache!.trailers = (TRAILERS || []).map((t, i) => ({ ...t, status: 'Published', displayOrder: i }));
       }
+      if (!dbCache!.countdowns || dbCache!.countdowns.length === 0) {
+        dbCache!.countdowns = [{ ...dbCache!.mangaRelease, isFeatured: true }];
+      }
       // Best-effort cache to writable location
       saveDatabase(dbCache!);
       return dbCache!;
@@ -194,6 +201,7 @@ function loadDatabase(): DatabaseSchema {
   const newDb: DatabaseSchema = {
     settings: DEFAULT_SETTINGS,
     mangaRelease: DEFAULT_MANGA_RELEASE,
+    countdowns: [{ ...DEFAULT_MANGA_RELEASE, isFeatured: true }],
     regions: REGIONS.map((r, i) => ({ ...r, status: 'Published', displayOrder: i })),
     characters: CHARACTERS.map((c, i) => ({ ...c, status: 'Published', displayOrder: i })),
     storyArcs: STORY_ARCS.map((s, i) => ({ ...s, status: 'Published', displayOrder: i })),
@@ -279,6 +287,20 @@ export function getPublicContent(): PublicContentResponse {
     isReleased: isReleased,
   };
 
+  // Process all countdowns
+  const rawCountdowns = db.countdowns && db.countdowns.length > 0 ? db.countdowns : [db.mangaRelease];
+  const countdowns = rawCountdowns
+    .filter((c) => c.status !== 'Hidden')
+    .map((c) => {
+      const rTime = new Date(c.releaseAt).getTime();
+      const isRel = c.status === 'Released' || (c.status === 'Scheduled' && now.getTime() >= rTime);
+      return {
+        ...c,
+        serverTime: nowIso,
+        isReleased: isRel,
+      };
+    });
+
   // Filter only published content for public consumption
   const regions = db.regions
     .filter((r) => r.status !== 'Draft' && r.status !== 'Hidden')
@@ -308,6 +330,7 @@ export function getPublicContent(): PublicContentResponse {
     serverTime: nowIso,
     settings: db.settings,
     mangaRelease: mangaReleaseCopy,
+    countdowns,
     regions,
     characters,
     storyArcs,
