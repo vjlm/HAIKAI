@@ -570,8 +570,8 @@
     }
   ],
   "admin": {
-    "passwordHash": "dce06d9712c9fd4547326f833c2694629fce78d6b544a74737d18c5e82a4e9facda4e5a2b0b33aaa8eecf8510f2747f0dbfb789648a0524073873bc6247246f6",
-    "salt": "1ad03c1fc6b581519d8827228f2c6373"
+    "passwordHash": "d613f7ea3e66b2dfd297cc4dc508e4a87339fea20beda4482e4ddbed402bddf606829449876f130ea6ce76296a1d72342e57faf3b66cbb3c10a9cc09b1983981",
+    "salt": "f2e7046e0e009a50a69bdfa4bd60c909"
   },
   "sessions": {
     "3f17b72a1a9d6322c063803f35cf3f392c55de0f7ab2ea3033ece502d8337f2b": {
@@ -585,9 +585,35 @@
     "31fcaa67d71c2f139cc4037c0d2efd8a37e07a84b118537cc886da9bd11cdaf8": {
       "username": "Owner",
       "expiresAt": 1790916437957
+    },
+    "8ae3e3bfbe556db08096c41eef390ac8a14d15882ab03e6bdd7c8ae93a3d8562": {
+      "username": "Owner",
+      "expiresAt": 1790927401289
+    },
+    "01173c1ae9730e06aaf991e6bfb4ba9da61c5b1da33c2eece456e39d7eb033ad": {
+      "username": "Owner",
+      "expiresAt": 1790927421151
     }
   },
   "auditLogs": [
+    {
+      "id": "ab182591-b1a4-4fa6-b3c5-ee8469684462",
+      "timestamp": "2026-09-25T07:50:21.152Z",
+      "user": "Owner",
+      "action": "LOGIN_SUCCESS",
+      "contentType": "Auth",
+      "contentId": "01173c1a",
+      "details": "Owner logged in successfully"
+    },
+    {
+      "id": "5ee9f0c9-bc2e-4dcc-b0c5-8a9ab71403ef",
+      "timestamp": "2026-09-25T07:49:43.455Z",
+      "user": "Owner",
+      "action": "LOGIN_SUCCESS",
+      "contentType": "Auth",
+      "contentId": "8ae3e3bf",
+      "details": "Owner logged in successfully"
+    },
     {
       "id": "bb41b188-1e28-44f5-9b67-1d76d5e8b09b",
       "timestamp": "2026-09-25T04:47:17.958Z",
@@ -641,6 +667,47 @@
       "contentType": "Database",
       "contentId": "root",
       "details": "Initial database schema and canonical lore seeded."
+    }
+  ],
+  "trailers": [
+    {
+      "id": "pv-01",
+      "title": "HAIKAI — Official Teaser PV 01: The Drowned Truth",
+      "japanese": "灰海 始動特報 — 溺れた真実",
+      "videoUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "thumbnailUrl": "/assets/manga_vol_01_cover.webp",
+      "duration": "01:32",
+      "releaseDate": "2026",
+      "description": "Seventeen-year-old salvage diver Nero Vale discovers an ancient pre-Flood bronze capsule at the midnight shelf break, triggering the Crownlands imperial manhunt.",
+      "category": "Official Teaser",
+      "status": "Published",
+      "displayOrder": 0
+    },
+    {
+      "id": "pv-02",
+      "title": "Main Cinematic Trailer: The Sea of Ash & The First Flood",
+      "japanese": "本予告第一弾 — 灰の境界線",
+      "videoUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "thumbnailUrl": "/assets/manga_vol_01_cover.webp",
+      "duration": "02:18",
+      "releaseDate": "2026",
+      "description": "Imperial cartographer Eira Voss reveals that seventy thousand people died defending empty water on false maps. The boundary at 82° South is expanding.",
+      "category": "Main Trailer",
+      "status": "Published",
+      "displayOrder": 1
+    },
+    {
+      "id": "pv-03",
+      "title": "Character PV 01: Nero Vale & The Midnight Shelf",
+      "japanese": "キャラクターPV 01 — ネロ・ヴェイル",
+      "videoUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "thumbnailUrl": "/assets/manga_vol_01_cover.webp",
+      "duration": "00:58",
+      "releaseDate": "2026",
+      "description": "A close examination of salvage diver Nero Vale: his silence, his lung capacity tests, and the forbidden dive 402.",
+      "category": "Character PV",
+      "status": "Published",
+      "displayOrder": 2
     }
   ]
 }

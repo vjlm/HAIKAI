@@ -13,6 +13,7 @@ import { ArcTimeline } from './components/ArcTimeline';
 import { MysteryArchive } from './components/MysteryArchive';
 import { WarRecords } from './components/WarRecords';
 import { Gallery } from './components/Gallery';
+import { TrailersSection } from './components/TrailersSection';
 import { MangaSection } from './components/MangaSection';
 import { FinalQuestion } from './components/FinalQuestion';
 import { Footer } from './components/Footer';
@@ -37,6 +38,7 @@ export default function App() {
     storyArcs?: any[];
     mysteries?: any[];
     galleryItems?: any[];
+    trailers?: any[];
     mangaRelease?: any;
   }>({});
 
@@ -233,10 +235,13 @@ export default function App() {
         {/* 13. War Records (Censorship & Historical Fragments) */}
         <WarRecords />
 
-        {/* 14. Visual Gallery & Lightbox */}
+        {/* 14. Official Trailers & Video Archives */}
+        <TrailersSection trailers={dynamicContent.trailers} />
+
+        {/* 15. Visual Gallery & Lightbox */}
         <Gallery galleryItems={dynamicContent.galleryItems} />
 
-        {/* 15. Final Question & Ending Epilogue Scene */}
+        {/* 16. Final Question & Ending Epilogue Scene */}
         <FinalQuestion />
       </main>
 

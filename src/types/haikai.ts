@@ -112,6 +112,20 @@ export interface GalleryItem {
   displayOrder?: number;
 }
 
+export interface TrailerItem {
+  id: string;
+  title: string;
+  japanese?: string;
+  videoUrl: string;
+  thumbnailUrl?: string;
+  duration?: string;
+  releaseDate?: string;
+  description?: string;
+  category?: string;
+  status?: 'Published' | 'Draft' | 'Hidden';
+  displayOrder?: number;
+}
+
 export interface AuditLog {
   id: string;
   timestamp: string;
@@ -131,4 +145,5 @@ export interface PublicContentResponse {
   storyArcs: StoryArc[];
   mysteries: MysteryFile[];
   galleryItems: GalleryItem[];
+  trailers?: TrailerItem[];
 }

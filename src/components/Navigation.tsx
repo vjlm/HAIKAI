@@ -71,6 +71,7 @@ export const Navigation: React.FC<NavigationProps> = ({
     { label: 'STORY', href: '#story' },
     { label: 'OATH', href: '#oath' },
     { label: 'MYSTERIES', href: '#mysteries' },
+    { label: 'TRAILERS', href: '#trailers' },
     { label: 'GALLERY', href: '#gallery' },
     { label: 'MANGA', href: '#manga' },
     { label: 'ABOUT', href: '#about' },

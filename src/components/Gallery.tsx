@@ -241,24 +241,117 @@ export const Gallery: React.FC<GalleryProps> = ({ galleryItems: propItems }) => 
             role="dialog"
             aria-modal="true"
           >
+            {/* Screen-Edge Navigation Arrows (Fixed at screen sides, never obscuring modal content) */}
+            <button
+              onClick={() =>
+                setActiveItemIndex((prev) =>
+                  prev !== null
+                    ? (prev - 1 + filteredItems.length) % filteredItems.length
+                    : 0
+                )
+              }
+              className="fixed left-2 sm:left-4 md:left-6 top-1/2 -translate-y-1/2 z-50 p-2.5 sm:p-3 rounded-full bg-[#070b10]/90 hover:bg-[#9e2a2b] border border-[#2a384c] hover:border-[#9e2a2b] text-[#c4ccd6] hover:text-white transition-all shadow-2xl"
+              aria-label="Previous artwork"
+              title="Previous (Left Arrow)"
+            >
+              <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
+            </button>
+
+            <button
+              onClick={() =>
+                setActiveItemIndex((prev) =>
+                  prev !== null ? (prev + 1) % filteredItems.length : 0
+                )
+              }
+              className="fixed right-2 sm:right-4 md:right-6 top-1/2 -translate-y-1/2 z-50 p-2.5 sm:p-3 rounded-full bg-[#070b10]/90 hover:bg-[#9e2a2b] border border-[#2a384c] hover:border-[#9e2a2b] text-[#c4ccd6] hover:text-white transition-all shadow-2xl"
+              aria-label="Next artwork"
+              title="Next (Right Arrow)"
+            >
+              <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
+            </button>
+
+            {/* Modal Dialog Content */}
             <div
               onClick={(e) => e.stopPropagation()}
               onTouchStart={handleTouchStart}
               onTouchEnd={handleTouchEnd}
-              className="relative max-w-4xl w-full border border-[#273243] bg-[#070a0f] p-4 sm:p-8 md:p-10 shadow-2xl max-h-[95dvh] overflow-y-auto"
+              className="relative max-w-4xl w-full border border-[#273243] bg-[#070a0f] p-4 sm:p-6 md:p-8 shadow-2xl max-h-[92dvh] overflow-y-auto flex flex-col space-y-4"
             >
-              {/* Close Button */}
-              <button
-                onClick={() => setActiveItemIndex(null)}
-                className="absolute top-4 right-4 p-2.5 min-h-[44px] min-w-[44px] flex items-center justify-center text-[#7f8b9b] hover:text-white border border-[#252f3f] bg-[#0c1017] transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#9e2a2b]"
-                aria-label="Close Lightbox"
-              >
-                <X className="w-5 h-5" />
-              </button>
+              {/* Top Dedicated Header Bar: Cleanly spaced, zero button overlap */}
+              <div className="flex items-center justify-between gap-3 pb-3 border-b border-[#1b2533]">
+                <div className="flex items-center gap-2 sm:gap-3 overflow-hidden">
+                  <span className="text-xs font-editorial-mono text-[#9e2a2b] font-bold tracking-wider shrink-0">
+                    [ {String((activeItemIndex ?? 0) + 1).padStart(2, '0')} / {String(filteredItems.length).padStart(2, '0')} ]
+                  </span>
+                  <span className="text-[11px] font-editorial-mono px-2 py-0.5 border border-[#2b394d] bg-[#0c121b] text-[#c4ccd6] uppercase tracking-wider shrink-0">
+                    {activeItem.category}
+                  </span>
+                  <span className="font-jp text-xs text-[#6e7d90] truncate hidden sm:inline">
+                    {activeItem.japanese}
+                  </span>
+                </div>
 
-              {/* Prev / Next Controls */}
-              <div className="absolute top-1/2 left-3 sm:left-4 -translate-y-1/2 z-20">
+                {/* Right controls: Share & Close - Neatly separated */}
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    onClick={handleShareArtwork}
+                    type="button"
+                    className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 border border-[#252f3f] bg-[#0c1017] hover:border-[#9e2a2b] text-[#c0cad6] hover:text-white font-cinzel text-xs uppercase transition-colors"
+                  >
+                    {copiedLink ? (
+                      <>
+                        <Check className="w-3.5 h-3.5 text-emerald-400" />
+                        <span className="text-emerald-400 text-[10px] sm:text-xs">COPIED</span>
+                      </>
+                    ) : (
+                      <>
+                        <Share2 className="w-3.5 h-3.5 text-[#9e2a2b]" />
+                        <span className="text-[10px] sm:text-xs hidden sm:inline">SHARE</span>
+                      </>
+                    )}
+                  </button>
+
+                  <button
+                    onClick={() => setActiveItemIndex(null)}
+                    className="p-1.5 min-h-[36px] min-w-[36px] flex items-center justify-center text-[#8e9cae] hover:text-white border border-[#252f3f] bg-[#0c1017] hover:border-[#9e2a2b] transition-colors"
+                    aria-label="Close Lightbox"
+                    title="Close (Esc)"
+                  >
+                    <X className="w-4 h-4 sm:w-5 sm:h-5" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Lightbox Visual Canvas Area: Pure viewing, zero obstruction */}
+              <div className="w-full max-h-[58vh] min-h-[240px] sm:min-h-[360px] bg-[#04060a] border border-[#1b2432] rounded flex items-center justify-center relative overflow-hidden select-none p-2 sm:p-4">
+                <div className="absolute inset-0 bg-radial-gradient(circle_at_center,_rgba(25,36,54,0.3)_0%,_transparent_75%) pointer-events-none" />
+
+                {activeItem.imageUrl ? (
+                  <img
+                    src={activeItem.imageUrl}
+                    alt={activeItem.title}
+                    draggable={false}
+                    className="max-h-[52vh] w-auto max-w-full object-contain rounded"
+                  />
+                ) : (
+                  <div className="text-center p-6 space-y-2">
+                    <span className="font-jp text-4xl sm:text-6xl text-[#4a586e] tracking-widest block">
+                      {activeItem.japanese}
+                    </span>
+                    <span className="font-cinzel text-lg sm:text-2xl text-[#dce1e6] uppercase tracking-wider block">
+                      {activeItem.title}
+                    </span>
+                    <span className="text-[10px] font-editorial-mono text-[#9e2a2b] tracking-widest uppercase block pt-1">
+                      OFFICIAL KEY ART STILL
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* Mobile Prev / Next Navigation Toolbar */}
+              <div className="flex sm:hidden items-center justify-between border-t border-b border-[#161f2c] py-2">
                 <button
+                  type="button"
                   onClick={() =>
                     setActiveItemIndex((prev) =>
                       prev !== null
@@ -266,94 +359,51 @@ export const Gallery: React.FC<GalleryProps> = ({ galleryItems: propItems }) => 
                         : 0
                     )
                   }
-                  className="p-2 sm:p-3 min-h-[44px] min-w-[44px] flex items-center justify-center bg-black/80 border border-[#232f3f] text-[#8ea0b4] hover:text-white transition-colors"
-                  aria-label="Previous artwork"
+                  className="flex items-center gap-1 px-3 py-1.5 border border-[#232f3f] bg-[#0b0f16] text-xs font-editorial-mono text-[#c4ccd6]"
                 >
-                  <ChevronLeft className="w-5 h-5" />
+                  <ChevronLeft className="w-4 h-4 text-[#9e2a2b]" />
+                  <span>PREV</span>
                 </button>
-              </div>
 
-              <div className="absolute top-1/2 right-3 sm:right-4 -translate-y-1/2 z-20">
+                <span className="text-[11px] font-editorial-mono text-[#667485]">
+                  SWIPE OR TAP TO NAVIGATE
+                </span>
+
                 <button
+                  type="button"
                   onClick={() =>
                     setActiveItemIndex((prev) =>
                       prev !== null ? (prev + 1) % filteredItems.length : 0
                     )
                   }
-                  className="p-2 sm:p-3 min-h-[44px] min-w-[44px] flex items-center justify-center bg-black/80 border border-[#232f3f] text-[#8ea0b4] hover:text-white transition-colors"
-                  aria-label="Next artwork"
+                  className="flex items-center gap-1 px-3 py-1.5 border border-[#232f3f] bg-[#0b0f16] text-xs font-editorial-mono text-[#c4ccd6]"
                 >
-                  <ChevronRight className="w-5 h-5" />
+                  <span>NEXT</span>
+                  <ChevronRight className="w-4 h-4 text-[#9e2a2b]" />
                 </button>
               </div>
 
-              {/* Lightbox Visual Area */}
-              <div className="aspect-video w-full bg-[#0c1119] border border-[#1f2836] flex flex-col items-center justify-center p-4 sm:p-8 mb-6 relative overflow-hidden select-none">
-                <div className="absolute inset-0 bg-radial-gradient(circle_at_center,_rgba(25,36,54,0.4)_0%,_transparent_70%)" />
-
-                {activeItem.imageUrl ? (
-                  <img
-                    src={activeItem.imageUrl}
-                    alt={activeItem.title}
-                    draggable={false}
-                    className="w-full h-full object-contain"
-                  />
-                ) : (
-                  <>
-                    <span className="font-jp text-4xl sm:text-6xl text-[#4a586e] tracking-widest block mb-3">
-                      {activeItem.japanese}
-                    </span>
-                    <span className="font-cinzel text-lg sm:text-2xl text-[#dce1e6] uppercase tracking-wider">
+              {/* Artwork Metadata & Description */}
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-t border-[#1a2330] pt-4">
+                <div className="space-y-1 flex-1">
+                  <div className="flex items-center gap-2">
+                    <Tag className="w-3.5 h-3.5 text-[#9e2a2b] shrink-0" />
+                    <h3 className="font-cinzel text-sm sm:text-base text-[#edf1f4] uppercase tracking-wider font-semibold">
                       {activeItem.title}
-                    </span>
-                    <span className="text-[10px] font-editorial-mono text-[#9e2a2b] tracking-widest uppercase mt-3">
-                      OFFICIAL KEY ART STILL
-                    </span>
-                  </>
-                )}
-              </div>
-
-              {/* Metadata & Description */}
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-t border-[#1a2330] pt-6">
-                <div>
-                  <div className="flex items-center gap-2 mb-1.5">
-                    <Tag className="w-3.5 h-3.5 text-[#9e2a2b]" />
-                    <span className="text-xs font-editorial-mono text-[#8c98a7] uppercase tracking-wider">
-                      CATEGORY: {activeItem.category}
-                    </span>
+                    </h3>
                   </div>
-                  <p className="text-xs sm:text-sm text-[#b2bcc8] max-w-xl leading-relaxed">
+                  <p className="text-xs sm:text-sm text-[#b2bcc8] leading-relaxed font-light">
                     {activeItem.description}
                   </p>
                 </div>
 
-                <div className="flex items-center gap-3 self-end sm:self-auto">
-                  <button
-                    onClick={handleShareArtwork}
-                    type="button"
-                    className="flex items-center gap-1.5 px-3 py-2 border border-[#252f3f] bg-[#0c1017] hover:border-[#9e2a2b] text-[#c0cad6] hover:text-white font-cinzel text-xs uppercase"
-                  >
-                    {copiedLink ? (
-                      <>
-                        <Check className="w-3.5 h-3.5 text-emerald-400" />
-                        <span className="text-emerald-400">COPIED</span>
-                      </>
-                    ) : (
-                      <>
-                        <Share2 className="w-3.5 h-3.5" />
-                        <span>SHARE ARTWORK</span>
-                      </>
-                    )}
-                  </button>
-
-                  <div className="text-right hidden sm:block">
-                    <span className="text-[10px] font-editorial-mono text-[#556272] uppercase block">
-                      PLATE
-                    </span>
-                    <span className="text-xs font-editorial-mono text-[#9ea9b7]">
-                      {activeItem.id.toUpperCase()}
-                    </span>
-                  </div>
+                <div className="text-right shrink-0 hidden sm:block">
+                  <span className="text-[10px] font-editorial-mono text-[#556272] uppercase block">
+                    PLATE RECORD
+                  </span>
+                  <span className="text-xs font-editorial-mono text-[#9ea9b7]">
+                    {activeItem.id.toUpperCase()}
+                  </span>
                 </div>
               </div>
             </div>

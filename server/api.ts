@@ -19,6 +19,7 @@ import {
   StoryArc,
   MysteryFile,
   GalleryItem,
+  TrailerItem,
 } from '../src/types/haikai';
 
 export const apiRouter = express.Router();
@@ -91,6 +92,19 @@ apiRouter.get('/content', (_req: Request, res: Response) => {
 // 2. Server time synchronization endpoint
 apiRouter.get('/time', (_req: Request, res: Response) => {
   res.json({ serverTime: new Date().toISOString() });
+});
+
+// 2b. Public trailers endpoint
+apiRouter.get('/trailers', (_req: Request, res: Response) => {
+  try {
+    const db = getDatabase();
+    const trailers = (db.trailers || [])
+      .filter((t) => t.status !== 'Draft' && t.status !== 'Hidden')
+      .sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0));
+    res.json(trailers);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to retrieve trailers' });
+  }
 });
 
 // 3. Quick manga release status check
@@ -296,6 +310,7 @@ apiRouter.get('/admin/content', requireAdmin, (_req: Request, res: Response) => 
     storyArcs: db.storyArcs,
     mysteries: db.mysteries,
     galleryItems: db.galleryItems,
+    trailers: db.trailers || [],
   });
 });
 
@@ -627,6 +642,74 @@ apiRouter.delete('/admin/gallery/:id', requireAdmin, (req: Request, res: Respons
   saveDatabase(db);
   recordAudit('Owner', 'DELETE_GALLERY_ITEM', 'Gallery', id, 'Deleted gallery item');
   res.json({ success: true });
+});
+
+/* ==========================================================================
+   TRAILERS & VIDEO ARCHIVE MANAGEMENT
+   ========================================================================== */
+
+apiRouter.get('/admin/trailers', requireAdmin, (_req: Request, res: Response) => {
+  const db = getDatabase();
+  res.json(db.trailers || []);
+});
+
+apiRouter.post('/admin/trailers', requireAdmin, (req: Request, res: Response) => {
+  const { trailer } = req.body || {};
+  if (!trailer || !trailer.title || !trailer.videoUrl) {
+    return res.status(400).json({ error: 'Title and Video URL are required.' });
+  }
+
+  const db = getDatabase();
+  if (!db.trailers) db.trailers = [];
+
+  const newTrailer: TrailerItem = {
+    id: trailer.id || `pv-${Date.now()}`,
+    title: trailer.title.trim(),
+    japanese: trailer.japanese?.trim() || '',
+    videoUrl: trailer.videoUrl.trim(),
+    thumbnailUrl: trailer.thumbnailUrl?.trim() || '',
+    duration: trailer.duration?.trim() || '01:30',
+    releaseDate: trailer.releaseDate?.trim() || '2026',
+    description: trailer.description?.trim() || '',
+    category: trailer.category || 'Official Trailer',
+    status: trailer.status || 'Published',
+    displayOrder: db.trailers.length,
+  };
+
+  db.trailers.push(newTrailer);
+  saveDatabase(db);
+  recordAudit('Owner', 'CREATE_TRAILER', 'Trailer', newTrailer.id, `Created trailer: ${newTrailer.title}`);
+  res.json({ success: true, trailer: newTrailer, trailers: db.trailers });
+});
+
+apiRouter.put('/admin/trailers/:id', requireAdmin, (req: Request, res: Response) => {
+  const { id } = req.params;
+  const updates = req.body || {};
+  const db = getDatabase();
+  if (!db.trailers) db.trailers = [];
+
+  const idx = db.trailers.findIndex((t) => t.id === id);
+  if (idx === -1) {
+    return res.status(404).json({ error: 'Trailer not found' });
+  }
+
+  db.trailers[idx] = { ...db.trailers[idx], ...updates, id };
+  saveDatabase(db);
+  recordAudit('Owner', 'UPDATE_TRAILER', 'Trailer', id, `Updated trailer: ${db.trailers[idx].title}`);
+  res.json({ success: true, trailer: db.trailers[idx], trailers: db.trailers });
+});
+
+apiRouter.delete('/admin/trailers/:id', requireAdmin, (req: Request, res: Response) => {
+  const { id } = req.params;
+  const db = getDatabase();
+  if (!db.trailers) db.trailers = [];
+
+  const target = db.trailers.find((t) => t.id === id);
+  const title = target?.title || id;
+  db.trailers = db.trailers.filter((t) => t.id !== id);
+  saveDatabase(db);
+  recordAudit('Owner', 'DELETE_TRAILER', 'Trailer', id, `Deleted trailer: ${title}`);
+  res.json({ success: true, trailers: db.trailers });
 });
 
 // Image Upload Endpoint with Strict Validation

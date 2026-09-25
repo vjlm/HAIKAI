@@ -9,6 +9,7 @@ import {
   StoryArc,
   MysteryFile,
   GalleryItem,
+  TrailerItem,
   AuditLog,
   PublicContentResponse,
 } from '../src/types/haikai';
@@ -18,6 +19,7 @@ import {
   STORY_ARCS,
   MYSTERY_FILES,
   GALLERY_ITEMS,
+  TRAILERS,
 } from '../src/data/haikaiData';
 
 export interface DatabaseSchema {
@@ -28,6 +30,7 @@ export interface DatabaseSchema {
   storyArcs: StoryArc[];
   mysteries: MysteryFile[];
   galleryItems: GalleryItem[];
+  trailers: TrailerItem[];
   admin: {
     passwordHash: string;
     salt: string;
@@ -137,6 +140,10 @@ function loadDatabase(): DatabaseSchema {
     try {
       const raw = fs.readFileSync(DB_FILE, 'utf-8');
       dbCache = JSON.parse(raw);
+      if (!dbCache!.trailers || dbCache!.trailers.length === 0) {
+        dbCache!.trailers = (TRAILERS || []).map((t, i) => ({ ...t, status: 'Published', displayOrder: i }));
+        saveDatabase(dbCache!);
+      }
       return dbCache!;
     } catch (err) {
       console.error('[DB] Failed to parse haikai_db.json from DB_FILE:', err);
@@ -148,6 +155,9 @@ function loadDatabase(): DatabaseSchema {
     try {
       const raw = fs.readFileSync(BUNDLED_DB_FILE, 'utf-8');
       dbCache = JSON.parse(raw);
+      if (!dbCache!.trailers || dbCache!.trailers.length === 0) {
+        dbCache!.trailers = (TRAILERS || []).map((t, i) => ({ ...t, status: 'Published', displayOrder: i }));
+      }
       // Best-effort cache to writable location
       saveDatabase(dbCache!);
       return dbCache!;
@@ -165,6 +175,7 @@ function loadDatabase(): DatabaseSchema {
     storyArcs: STORY_ARCS.map((s, i) => ({ ...s, status: 'Published', displayOrder: i })),
     mysteries: MYSTERY_FILES.map((m, i) => ({ ...m, status: 'Published', displayOrder: i })),
     galleryItems: GALLERY_ITEMS.map((g, i) => ({ ...g, status: 'Published', displayOrder: i })),
+    trailers: (TRAILERS || []).map((t, i) => ({ ...t, status: 'Published', displayOrder: i })),
     admin: initialAdmin,
     sessions: {},
     auditLogs: [
@@ -265,6 +276,10 @@ export function getPublicContent(): PublicContentResponse {
     .filter((g) => g.status !== 'Draft' && g.status !== 'Hidden')
     .sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0));
 
+  const trailers = (db.trailers || [])
+    .filter((t) => t.status !== 'Draft' && t.status !== 'Hidden')
+    .sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0));
+
   return {
     serverTime: nowIso,
     settings: db.settings,
@@ -274,5 +289,6 @@ export function getPublicContent(): PublicContentResponse {
     storyArcs,
     mysteries,
     galleryItems,
+    trailers,
   };
 }

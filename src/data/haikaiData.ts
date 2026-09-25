@@ -6,6 +6,7 @@ import {
   StoryArc,
   MysteryFile,
   GalleryItem,
+  TrailerItem,
 } from '../types/haikai';
 import dbJson from '../../data/haikai_db.json';
 
@@ -16,6 +17,52 @@ export const CHARACTERS: Character[] = dbJson.characters as Character[];
 export const STORY_ARCS: StoryArc[] = dbJson.storyArcs as StoryArc[];
 export const MYSTERY_FILES: MysteryFile[] = dbJson.mysteries as MysteryFile[];
 export const GALLERY_ITEMS: GalleryItem[] = dbJson.galleryItems as GalleryItem[];
+export const DEFAULT_TRAILERS: TrailerItem[] = [
+  {
+    id: 'pv-01',
+    title: 'HAIKAI — Official Teaser PV 01: The Drowned Truth',
+    japanese: '灰海 始動特報 — 溺れた真実',
+    videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+    thumbnailUrl: '/assets/manga_vol_01_cover.webp',
+    duration: '01:32',
+    releaseDate: '2026',
+    description: 'Seventeen-year-old salvage diver Nero Vale discovers an ancient pre-Flood bronze capsule at the midnight shelf break, triggering the Crownlands imperial manhunt.',
+    category: 'Official Teaser',
+    status: 'Published',
+    displayOrder: 0,
+  },
+  {
+    id: 'pv-02',
+    title: 'Main Cinematic Trailer: The Sea of Ash & The First Flood',
+    japanese: '本予告第一弾 — 灰の境界線',
+    videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+    thumbnailUrl: '/assets/manga_vol_01_cover.webp',
+    duration: '02:18',
+    releaseDate: '2026',
+    description: 'Imperial cartographer Eira Voss reveals that seventy thousand people died defending empty water on false maps. The boundary at 82° South is expanding.',
+    category: 'Main Trailer',
+    status: 'Published',
+    displayOrder: 1,
+  },
+  {
+    id: 'pv-03',
+    title: 'Character PV 01: Nero Vale & The Midnight Shelf',
+    japanese: 'キャラクターPV 01 — ネロ・ヴェイル',
+    videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+    thumbnailUrl: '/assets/manga_vol_01_cover.webp',
+    duration: '00:58',
+    releaseDate: '2026',
+    description: 'A close examination of salvage diver Nero Vale: his silence, his lung capacity tests, and the forbidden dive 402.',
+    category: 'Character PV',
+    status: 'Published',
+    displayOrder: 2,
+  },
+];
+
+export const TRAILERS: TrailerItem[] =
+  ((dbJson as any).trailers && (dbJson as any).trailers.length > 0)
+    ? (dbJson as any).trailers
+    : DEFAULT_TRAILERS;
 
 export const RELATIONSHIPS: any[] = [
   {
