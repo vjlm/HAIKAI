@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowUp } from 'lucide-react';
+import { ArrowUp, Lock } from 'lucide-react';
 import { SiteSettings } from '../types/haikai';
 
 interface FooterProps {
@@ -127,6 +127,22 @@ export const Footer: React.FC<FooterProps> = ({ settings, onOpenAdminLogin }) =>
 
           <div className="flex items-center gap-3">
             <span>ARCHIVE: GA-VII</span>
+            <span>·</span>
+            <button
+              onClick={() => {
+                if (onOpenAdminLogin) {
+                  onOpenAdminLogin();
+                } else if (typeof window !== 'undefined') {
+                  window.location.hash = '#admin';
+                }
+              }}
+              type="button"
+              className="inline-flex items-center gap-1.5 px-2 py-0.5 border border-[#1b232e] bg-[#06080c] hover:border-[#9e2a2b] hover:text-[#f2afb2] text-[#6b7888] transition-colors"
+              title="Access Master Owner CMS"
+            >
+              <Lock className="w-2.5 h-2.5 text-[#9e2a2b]" />
+              <span>OWNER GATEWAY</span>
+            </button>
             <span>·</span>
             <span className="text-[#9e2a2b]">NO CONFIRMED BOTTOM</span>
           </div>

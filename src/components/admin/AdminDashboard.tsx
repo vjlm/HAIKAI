@@ -27,6 +27,10 @@ import {
   Volume2,
   ExternalLink,
   ChevronRight,
+  Calendar,
+  Star,
+  BookOpen,
+  Tag,
 } from 'lucide-react';
 import {
   SiteSettings,
@@ -39,6 +43,7 @@ import {
 } from '../../types/haikai';
 import { ImageInputWithCrop } from '../common/ImageInputWithCrop';
 import { parseVideoEmbed } from '../TrailersSection';
+import { adminFetch } from '../../utils/adminApi';
 
 interface AdminDashboardProps {
   onLogout: () => void;
@@ -56,6 +61,67 @@ type AdminTab =
   | 'appearance'
   | 'settings';
 
+const DEFAULT_SITE_SETTINGS: SiteSettings = {
+  siteTitle: 'HAIKAI — The Sea of Ash',
+  siteSubtitle: 'THE SEA OF ASH',
+  japaneseTitle: '灰海',
+  tagline: '“Was this world ever meant to be saved?”',
+  ctaPrimaryLabel: '[ ENTER THE WORLD → ]',
+  ctaPrimaryLink: '#manga',
+  ctaSecondaryLabel: '[ MEET THE CHARACTERS ]',
+  ctaSecondaryLink: '#characters',
+  heroNotice: '',
+  showHeroNotice: false,
+  accentColor: '#9e2a2b',
+  showAshParticles: true,
+  animationSpeed: 'cinematic',
+  visibleSections: {
+    introduction: true,
+    seaOfAsh: true,
+    world: true,
+    characters: true,
+    ashSection: true,
+    relationships: true,
+    romance: true,
+    oathSystem: true,
+    storyArcs: true,
+    mysteries: true,
+    manga: true,
+    warRecords: true,
+    trailers: true,
+    gallery: true,
+    finalQuestion: true,
+  },
+  socialLinks: {
+    x: 'https://x.com/haikai_official',
+    instagram: 'https://instagram.com/haikai_manga',
+    youtube: 'https://youtube.com',
+    discord: 'https://discord.gg',
+  },
+  footerCredits: 'HAIKAI PRODUCTION COMMITTEE · ALL RIGHTS RESERVED',
+  seoDescription:
+    'Enter the world of HAIKAI — a dark fantasy mystery surrounding the Sea of Ash, the First Flood, and a civilization built on forgotten truth.',
+  updatedAt: new Date().toISOString(),
+};
+
+const DEFAULT_MANGA_FALLBACK: MangaRelease = {
+  id: 'manga-vol-01',
+  title: 'HAIKAI — THE SEA OF ASH',
+  volumeNumber: 'Volume 01',
+  subtitle: 'FIRST PUBLICATION · CHAPTERS 01–05',
+  chapterRange: 'Chapters 01–05: The Salvage Boy to The War Records',
+  category: 'Manga Volume',
+  description: 'Seventeen-year-old salvage diver Nero Vale pulls an impossible pre-Flood bronze cylinder from the midnight shelf, triggering an imperial manhunt that shatters three thousand years of Crownlands peace.',
+  coverImage: '/manga-cover-vol1.svg',
+  releaseAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+  mangaUrl: 'https://haikai-manga.official.jp/read/volume-01',
+  status: 'Scheduled',
+  openInNewTab: true,
+  isFeatured: true,
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+};
+
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   onLogout,
   onPreviewSite,
@@ -66,8 +132,18 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
-  const [settings, setSettings] = useState<SiteSettings | null>(null);
-  const [mangaRelease, setMangaRelease] = useState<MangaRelease | null>(null);
+  const [settings, setSettings] = useState<SiteSettings>(DEFAULT_SITE_SETTINGS);
+  const [mangaRelease, setMangaRelease] = useState<MangaRelease>(DEFAULT_MANGA_FALLBACK);
+  const [countdowns, setCountdowns] = useState<MangaRelease[]>([DEFAULT_MANGA_FALLBACK]);
+  const [editingCountdown, setEditingCountdown] = useState<Partial<MangaRelease> | null>(null);
+  const [isNewCountdown, setIsNewCountdown] = useState(false);
+  const [rescheduleItem, setRescheduleItem] = useState<{
+    id: string;
+    title: string;
+    releaseAt: string;
+    status: 'Scheduled' | 'Released' | 'Hidden';
+  } | null>(null);
+
   const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
   const [trailers, setTrailers] = useState<TrailerItem[]>([]);
   const [characters, setCharacters] = useState<Character[]>([]);
@@ -92,18 +168,67 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const fetchData = async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/admin/content');
+      const res = await adminFetch('/api/admin/content');
+      if (res.status === 401) {
+        showFeedback('Session expired. Please log in again.');
+        onLogout();
+        return;
+      }
       if (res.ok) {
         const data = await res.json();
-        setSettings(data.settings);
-        setMangaRelease(data.mangaRelease);
+        if (data.settings) {
+          setSettings({
+            ...DEFAULT_SITE_SETTINGS,
+            ...data.settings,
+            visibleSections: {
+              ...DEFAULT_SITE_SETTINGS.visibleSections,
+              ...(data.settings.visibleSections || {}),
+            },
+            socialLinks: {
+              ...DEFAULT_SITE_SETTINGS.socialLinks,
+              ...(data.settings.socialLinks || {}),
+            },
+          });
+        }
+        if (data.mangaRelease) {
+          setMangaRelease({ ...DEFAULT_MANGA_FALLBACK, ...data.mangaRelease });
+        }
+        const rawCds =
+          data.countdowns && Array.isArray(data.countdowns) && data.countdowns.length > 0
+            ? data.countdowns
+            : data.mangaRelease
+            ? [data.mangaRelease]
+            : [DEFAULT_MANGA_FALLBACK];
+
+        const cds: MangaRelease[] = rawCds
+          .filter(Boolean)
+          .map((c: any, i: number) => ({
+            id: c.id || `countdown-${i}-${Date.now()}`,
+            title: c.title || 'HAIKAI Release',
+            volumeNumber: c.volumeNumber || `Volume 0${i + 1}`,
+            subtitle: c.subtitle || '',
+            chapterRange: c.chapterRange || '',
+            category: c.category || 'Manga',
+            description: c.description || '',
+            coverImage: c.coverImage || '/manga-cover-vol1.svg',
+            releaseAt: c.releaseAt || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+            mangaUrl: c.mangaUrl || 'https://haikai-manga.official.jp',
+            status: c.status || 'Scheduled',
+            openInNewTab: c.openInNewTab !== false,
+            isFeatured: Boolean(c.isFeatured),
+            createdAt: c.createdAt || new Date().toISOString(),
+            updatedAt: c.updatedAt || new Date().toISOString(),
+          }));
+
+        setCountdowns(cds);
         setGalleryItems(data.galleryItems || []);
         setTrailers(data.trailers || []);
         setCharacters(data.characters || []);
         setRegions(data.regions || []);
       }
-    } catch {
-      // Error fetching
+    } catch (err) {
+      console.error('Fetch error:', err);
+      showFeedback('Network error retrieving data.');
     } finally {
       setLoading(false);
     }
@@ -126,7 +251,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     setSaving(true);
 
     try {
-      const res = await fetch('/api/admin/settings', {
+      const res = await adminFetch('/api/admin/settings', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -144,14 +269,14 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     }
   };
 
-  // 2. Save Manga Release
+  // 2. Save Manga Release / Single Countdown
   const handleSaveManga = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!mangaRelease) return;
     setSaving(true);
 
     try {
-      const res = await fetch('/api/admin/manga', {
+      const res = await adminFetch('/api/admin/manga', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(mangaRelease),
@@ -159,11 +284,129 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
       if (res.ok) {
         showFeedback('Manga serialization, cover, and countdown schedule saved.');
+        fetchData();
       }
     } catch {
       showFeedback('Failed to save manga release.');
     } finally {
       setSaving(false);
+    }
+  };
+
+  // 2b. Save / Create Countdown (for new book, volume, PV)
+  const handleSaveCountdown = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingCountdown || (!editingCountdown.title && !editingCountdown.volumeNumber)) return;
+    setSaving(true);
+
+    try {
+      const res = await adminFetch('/api/admin/countdowns', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(editingCountdown),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setCountdowns(data.countdowns);
+        if (data.mangaRelease) setMangaRelease(data.mangaRelease);
+        setEditingCountdown(null);
+        setIsNewCountdown(false);
+        showFeedback('Countdown release saved successfully.');
+      } else {
+        const errData = await res.json();
+        showFeedback(errData.error || 'Failed to save countdown.');
+      }
+    } catch {
+      showFeedback('Network error saving countdown.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // 2c. Reschedule Countdown (Quick Action)
+  const handleRescheduleCountdown = async (
+    id: string,
+    releaseAt: string,
+    status?: 'Scheduled' | 'Released' | 'Hidden'
+  ) => {
+    setSaving(true);
+    try {
+      const res = await adminFetch(`/api/admin/countdowns/${id}/reschedule`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ releaseAt, status }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setCountdowns(data.countdowns);
+        if (data.mangaRelease) setMangaRelease(data.mangaRelease);
+        setRescheduleItem(null);
+        showFeedback('Countdown rescheduled successfully.');
+      } else {
+        showFeedback('Failed to reschedule countdown.');
+      }
+    } catch {
+      showFeedback('Network error rescheduling countdown.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // 2d. Feature a Countdown on Homepage
+  const handleFeatureCountdown = async (id: string) => {
+    try {
+      const res = await adminFetch(`/api/admin/countdowns/${id}/feature`, {
+        method: 'POST',
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setCountdowns(data.countdowns);
+        if (data.mangaRelease) setMangaRelease(data.mangaRelease);
+        showFeedback('Featured countdown updated.');
+      }
+    } catch {
+      showFeedback('Failed to set featured countdown.');
+    }
+  };
+
+  // 2e. Publish / Release Countdown immediately
+  const handlePublishCountdownNow = async (id: string) => {
+    if (!confirm('Unseal and immediately release this countdown for public reader access?')) return;
+    try {
+      const res = await adminFetch(`/api/admin/countdowns/${id}/publish-now`, {
+        method: 'POST',
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setCountdowns(data.countdowns);
+        if (data.mangaRelease) setMangaRelease(data.mangaRelease);
+        showFeedback('Countdown released immediately! Readers unlocked.');
+      }
+    } catch {
+      showFeedback('Failed to release countdown.');
+    }
+  };
+
+  // 2f. Delete Countdown
+  const handleDeleteCountdown = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this countdown?')) return;
+    try {
+      const res = await adminFetch(`/api/admin/countdowns/${id}`, {
+        method: 'DELETE',
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setCountdowns(data.countdowns);
+        if (data.mangaRelease) setMangaRelease(data.mangaRelease);
+        showFeedback('Countdown deleted.');
+      } else {
+        const err = await res.json();
+        showFeedback(err.error || 'Failed to delete countdown.');
+      }
+    } catch {
+      showFeedback('Failed to delete countdown.');
     }
   };
 
@@ -175,7 +418,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
     try {
       if (isNewTrailer) {
-        const res = await fetch('/api/admin/trailers', {
+        const res = await adminFetch('/api/admin/trailers', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ trailer: editingTrailer }),
@@ -188,7 +431,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           showFeedback('New trailer published to archive.');
         }
       } else {
-        const res = await fetch(`/api/admin/trailers/${editingTrailer.id}`, {
+        const res = await adminFetch(`/api/admin/trailers/${editingTrailer.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(editingTrailer),
@@ -210,7 +453,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const handleDeleteTrailer = async (id: string) => {
     if (!confirm('Are you sure you want to delete this trailer video?')) return;
     try {
-      const res = await fetch(`/api/admin/trailers/${id}`, { method: 'DELETE' });
+      const res = await adminFetch(`/api/admin/trailers/${id}`, { method: 'DELETE' });
       if (res.ok) {
         const data = await res.json();
         setTrailers(data.trailers);
@@ -228,7 +471,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     setSaving(true);
 
     try {
-      const res = await fetch('/api/admin/gallery', {
+      const res = await adminFetch('/api/admin/gallery', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ item: editingGallery }),
@@ -250,7 +493,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const handleDeleteGallery = async (id: string) => {
     if (!confirm('Are you sure you want to delete this gallery artwork?')) return;
     try {
-      const res = await fetch(`/api/admin/gallery/${id}`, { method: 'DELETE' });
+      const res = await adminFetch(`/api/admin/gallery/${id}`, { method: 'DELETE' });
       if (res.ok) {
         const data = await res.json();
         setGalleryItems(data.galleryItems);
@@ -268,7 +511,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     setSaving(true);
 
     try {
-      const res = await fetch('/api/admin/characters', {
+      const res = await adminFetch('/api/admin/characters', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ character: editingCharacter }),
@@ -290,7 +533,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const handleDeleteCharacter = async (id: string) => {
     if (!confirm('Are you sure you want to delete this character dossier?')) return;
     try {
-      const res = await fetch(`/api/admin/characters/${id}`, { method: 'DELETE' });
+      const res = await adminFetch(`/api/admin/characters/${id}`, { method: 'DELETE' });
       if (res.ok) {
         setCharacters((prev) => prev.filter((c) => c.id !== id));
         showFeedback('Character dossier deleted.');
@@ -307,7 +550,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     setSaving(true);
 
     try {
-      const res = await fetch('/api/admin/regions', {
+      const res = await adminFetch('/api/admin/regions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ region: editingRegion }),
@@ -329,7 +572,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const handleDeleteRegion = async (id: string) => {
     if (!confirm('Are you sure you want to delete this world region?')) return;
     try {
-      const res = await fetch(`/api/admin/regions/${id}`, { method: 'DELETE' });
+      const res = await adminFetch(`/api/admin/regions/${id}`, { method: 'DELETE' });
       if (res.ok) {
         setRegions((prev) => prev.filter((r) => r.id !== id));
         showFeedback('Region deleted.');
@@ -557,169 +800,597 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         ) : (
           <>
             {/* ==============================================================
-                TAB 1: MANGA SERIALIZATION
+                TAB 1: MANGA & MULTI-COUNTDOWN RELEASES
                ============================================================== */}
-            {activeTab === 'manga' && mangaRelease && (
-              <div className="border border-[#1f2837] bg-[#080c12] p-6 sm:p-8 space-y-6">
-                <div className="pb-3 border-b border-[#161d28] flex items-center justify-between">
-                  <h2 className="font-cinzel text-lg text-white uppercase tracking-wider flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-[#9e2a2b]" />
-                    <span>VOLUME 01 SERIALIZATION & LIVE COUNTDOWN</span>
-                  </h2>
-                  <span className="text-xs font-editorial-mono text-[#78889b]">
-                    STATUS: <strong className="text-[#f2afb2]">{mangaRelease.status}</strong>
-                  </span>
+            {activeTab === 'manga' && (
+              <div className="space-y-6">
+                {/* Header & Quick Add */}
+                <div className="pb-3 border-b border-[#161d28] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div>
+                    <h2 className="font-cinzel text-lg text-white uppercase tracking-wider flex items-center gap-2">
+                      <Clock className="w-4 h-4 text-[#9e2a2b]" />
+                      <span>COUNTDOWN TIMERS & BOOK RELEASES ({countdowns.length})</span>
+                    </h2>
+                    <p className="text-xs font-editorial-mono text-[#6e7d90] mt-1">
+                      Manage publication countdowns for new books, manga volumes, light novels, and special premieres.
+                    </p>
+                  </div>
+
+                  {!editingCountdown && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const nextWeek = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+                        setEditingCountdown({
+                          title: 'HAIKAI — VOLUME 02',
+                          volumeNumber: `Volume 0${countdowns.length + 1}`,
+                          subtitle: 'NEW VOLUME PUBLICATION',
+                          category: 'Manga Volume',
+                          chapterRange: 'Chapters 06–12',
+                          description: 'The journey deepens as the secrets of the First Flood unravel.',
+                          coverImage: '/assets/manga_vol_01_cover.webp',
+                          releaseAt: nextWeek,
+                          mangaUrl: 'https://haikai-manga.official.jp',
+                          status: 'Scheduled',
+                          openInNewTab: true,
+                          isFeatured: false,
+                        });
+                        setIsNewCountdown(true);
+                      }}
+                      className="px-4 py-2.5 bg-[#9e2a2b] hover:bg-[#b53235] text-white text-xs font-cinzel tracking-wider uppercase font-semibold flex items-center gap-2 transition-all shadow-md shrink-0"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>ADD NEW COUNTDOWN</span>
+                    </button>
+                  )}
                 </div>
 
-                <form onSubmit={handleSaveManga} className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-1">
-                      <label className="text-[11px] font-editorial-mono text-[#788698] uppercase block">
-                        VOLUME TITLE:
-                      </label>
-                      <input
-                        type="text"
-                        value={mangaRelease.title}
-                        onChange={(e) => setMangaRelease({ ...mangaRelease, title: e.target.value })}
-                        className="w-full bg-[#05070a] border border-[#1b2533] px-3 py-2 text-xs font-editorial-mono text-white outline-none focus:border-[#9e2a2b]"
-                      />
-                    </div>
+                {/* Quick Reschedule Modal */}
+                {rescheduleItem && (
+                  <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+                    <div className="w-full max-w-lg border border-[#9e2a2b] bg-[#090d14] p-6 space-y-5 shadow-2xl relative">
+                      <div className="flex items-center justify-between pb-3 border-b border-[#1b2533]">
+                        <h3 className="font-cinzel text-sm text-white uppercase tracking-wider flex items-center gap-2">
+                          <Calendar className="w-4 h-4 text-[#9e2a2b]" />
+                          <span>RESCHEDULE COUNTDOWN</span>
+                        </h3>
+                        <button
+                          type="button"
+                          onClick={() => setRescheduleItem(null)}
+                          className="text-[#64748b] hover:text-white text-xs font-editorial-mono"
+                        >
+                          ✕ CLOSE
+                        </button>
+                      </div>
 
-                    <div className="space-y-1">
-                      <label className="text-[11px] font-editorial-mono text-[#788698] uppercase block">
-                        VOLUME NUMBER / BADGE:
-                      </label>
-                      <input
-                        type="text"
-                        value={mangaRelease.volumeNumber}
-                        onChange={(e) =>
-                          setMangaRelease({ ...mangaRelease, volumeNumber: e.target.value })
-                        }
-                        className="w-full bg-[#05070a] border border-[#1b2533] px-3 py-2 text-xs font-editorial-mono text-white outline-none focus:border-[#9e2a2b]"
-                      />
+                      <div className="space-y-1">
+                        <p className="text-xs text-[#a3b1c2] font-cinzel font-semibold">
+                          {rescheduleItem.title}
+                        </p>
+                        <p className="text-[11px] font-editorial-mono text-[#627183]">
+                          Adjust live countdown date & time or toggle immediate reader release.
+                        </p>
+                      </div>
+
+                      {/* Quick Date Presets */}
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] font-editorial-mono text-[#788698] uppercase block">
+                          QUICK OFFSET PRESETS:
+                        </label>
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                          {[
+                            { label: '+1 Day', ms: 1 * 24 * 60 * 60 * 1000 },
+                            { label: '+3 Days', ms: 3 * 24 * 60 * 60 * 1000 },
+                            { label: '+1 Week', ms: 7 * 24 * 60 * 60 * 1000 },
+                            { label: '+1 Month', ms: 30 * 24 * 60 * 60 * 1000 },
+                          ].map((preset) => (
+                            <button
+                              key={preset.label}
+                              type="button"
+                              onClick={() => {
+                                const newDate = new Date(Date.now() + preset.ms).toISOString();
+                                setRescheduleItem({ ...rescheduleItem, releaseAt: newDate });
+                              }}
+                              className="px-2 py-1.5 border border-[#1e2a3b] bg-[#0c121a] hover:border-[#9e2a2b] hover:text-white text-[#8997a8] text-[11px] font-editorial-mono transition-colors"
+                            >
+                              {preset.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="space-y-3">
+                        <div className="space-y-1">
+                          <label className="text-[11px] font-editorial-mono text-[#788698] uppercase block">
+                            TARGET DATE & TIME:
+                          </label>
+                          <input
+                            type="datetime-local"
+                            value={
+                              rescheduleItem.releaseAt
+                                ? new Date(rescheduleItem.releaseAt).toISOString().slice(0, 16)
+                                : ''
+                            }
+                            onChange={(e) => {
+                              const iso = new Date(e.target.value).toISOString();
+                              setRescheduleItem({ ...rescheduleItem, releaseAt: iso });
+                            }}
+                            className="w-full bg-[#05070a] border border-[#1b2533] px-3.5 py-2 text-xs font-editorial-mono text-white outline-none focus:border-[#9e2a2b]"
+                          />
+                        </div>
+
+                        <div className="space-y-1">
+                          <label className="text-[11px] font-editorial-mono text-[#788698] uppercase block">
+                            COUNTDOWN STATUS:
+                          </label>
+                          <select
+                            value={rescheduleItem.status}
+                            onChange={(e) =>
+                              setRescheduleItem({
+                                ...rescheduleItem,
+                                status: e.target.value as 'Scheduled' | 'Released' | 'Hidden',
+                              })
+                            }
+                            className="w-full bg-[#05070a] border border-[#1b2533] px-3.5 py-2 text-xs font-editorial-mono text-white outline-none focus:border-[#9e2a2b]"
+                          >
+                            <option value="Scheduled">Scheduled (Active Live Countdown)</option>
+                            <option value="Released">Released (Immediate Unsealed Reader Access)</option>
+                            <option value="Hidden">Hidden (Draft)</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div className="pt-3 border-t border-[#161d28] flex justify-end gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setRescheduleItem(null)}
+                          className="px-4 py-2 border border-[#232d3d] text-[#8695a7] hover:text-white text-xs font-cinzel uppercase transition-colors"
+                        >
+                          CANCEL
+                        </button>
+                        <button
+                          type="button"
+                          disabled={saving}
+                          onClick={() =>
+                            handleRescheduleCountdown(
+                              rescheduleItem.id,
+                              rescheduleItem.releaseAt,
+                              rescheduleItem.status
+                            )
+                          }
+                          className="px-5 py-2 bg-[#9e2a2b] hover:bg-[#b53235] text-white text-xs font-cinzel font-semibold uppercase tracking-wider transition-colors disabled:opacity-50"
+                        >
+                          {saving ? 'UPDATING...' : 'SAVE SCHEDULE'}
+                        </button>
+                      </div>
                     </div>
                   </div>
+                )}
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-1">
-                      <label className="text-[11px] font-editorial-mono text-[#788698] uppercase block">
-                        SUBTITLE:
-                      </label>
-                      <input
-                        type="text"
-                        value={mangaRelease.subtitle}
-                        onChange={(e) =>
-                          setMangaRelease({ ...mangaRelease, subtitle: e.target.value })
-                        }
-                        className="w-full bg-[#05070a] border border-[#1b2533] px-3 py-2 text-xs font-editorial-mono text-white outline-none focus:border-[#9e2a2b]"
-                      />
-                    </div>
-
-                    <div className="space-y-1">
-                      <label className="text-[11px] font-editorial-mono text-[#788698] uppercase block">
-                        CHAPTER RANGE:
-                      </label>
-                      <input
-                        type="text"
-                        value={mangaRelease.chapterRange}
-                        onChange={(e) =>
-                          setMangaRelease({ ...mangaRelease, chapterRange: e.target.value })
-                        }
-                        className="w-full bg-[#05070a] border border-[#1b2533] px-3 py-2 text-xs font-editorial-mono text-white outline-none focus:border-[#9e2a2b]"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-1">
-                    <label className="text-[11px] font-editorial-mono text-[#788698] uppercase block">
-                      OFFICIAL READER URL:
-                    </label>
-                    <input
-                      type="url"
-                      value={mangaRelease.mangaUrl}
-                      onChange={(e) =>
-                        setMangaRelease({ ...mangaRelease, mangaUrl: e.target.value })
-                      }
-                      className="w-full bg-[#05070a] border border-[#1b2533] px-3 py-2 text-xs font-editorial-mono text-white outline-none focus:border-[#9e2a2b]"
-                      placeholder="https://..."
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-1">
-                      <label className="text-[11px] font-editorial-mono text-[#788698] uppercase block">
-                        SCHEDULED RELEASE TIMESTAMP (ISO / UTC):
-                      </label>
-                      <input
-                        type="datetime-local"
-                        value={
-                          mangaRelease.releaseAt
-                            ? new Date(mangaRelease.releaseAt).toISOString().slice(0, 16)
-                            : ''
-                        }
-                        onChange={(e) => {
-                          const iso = new Date(e.target.value).toISOString();
-                          setMangaRelease({ ...mangaRelease, releaseAt: iso });
+                {/* Form: Add or Edit Full Countdown */}
+                {editingCountdown && (
+                  <div className="border border-[#9e2a2b] bg-[#0a0e16] p-6 sm:p-8 space-y-6">
+                    <div className="flex items-center justify-between pb-3 border-b border-[#1b2533]">
+                      <h3 className="font-cinzel text-base text-white uppercase flex items-center gap-2">
+                        <Clock className="w-4 h-4 text-[#9e2a2b]" />
+                        <span>{isNewCountdown ? 'CREATE NEW COUNTDOWN / BOOK' : 'EDIT COUNTDOWN DETAILS'}</span>
+                      </h3>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditingCountdown(null);
+                          setIsNewCountdown(false);
                         }}
-                        className="w-full bg-[#05070a] border border-[#1b2533] px-3 py-2 text-xs font-editorial-mono text-white outline-none focus:border-[#9e2a2b]"
-                      />
-                    </div>
-
-                    <div className="space-y-1">
-                      <label className="text-[11px] font-editorial-mono text-[#788698] uppercase block">
-                        RELEASE STATUS:
-                      </label>
-                      <select
-                        value={mangaRelease.status}
-                        onChange={(e) =>
-                          setMangaRelease({
-                            ...mangaRelease,
-                            status: e.target.value as 'Scheduled' | 'Released' | 'Hidden',
-                          })
-                        }
-                        className="w-full bg-[#05070a] border border-[#1b2533] px-3 py-2 text-xs font-editorial-mono text-white outline-none focus:border-[#9e2a2b]"
+                        className="text-xs font-editorial-mono text-[#6c7d92] hover:text-white"
                       >
-                        <option value="Scheduled">Scheduled (Live Countdown Active)</option>
-                        <option value="Released">Released (Immediate Unsealed Reader Access)</option>
-                        <option value="Hidden">Hidden</option>
-                      </select>
+                        [ CANCEL ]
+                      </button>
                     </div>
-                  </div>
 
-                  <div className="space-y-1">
-                    <label className="text-[11px] font-editorial-mono text-[#788698] uppercase block">
-                      SYNOPSIS & DESCRIPTION:
-                    </label>
-                    <textarea
-                      rows={3}
-                      value={mangaRelease.description}
-                      onChange={(e) =>
-                        setMangaRelease({ ...mangaRelease, description: e.target.value })
-                      }
-                      className="w-full bg-[#05070a] border border-[#1b2533] px-3 py-2 text-xs font-editorial-mono text-white outline-none focus:border-[#9e2a2b]"
-                    />
-                  </div>
+                    <form onSubmit={handleSaveCountdown} className="space-y-6">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="space-y-1 md:col-span-2">
+                          <label className="text-[11px] font-editorial-mono text-[#788698] uppercase block">
+                            RELEASE TITLE:
+                          </label>
+                          <input
+                            type="text"
+                            required
+                            placeholder="e.g. HAIKAI — VOLUME 02"
+                            value={editingCountdown.title || ''}
+                            onChange={(e) =>
+                              setEditingCountdown({ ...editingCountdown, title: e.target.value })
+                            }
+                            className="w-full bg-[#05070a] border border-[#1b2533] px-3 py-2 text-xs font-editorial-mono text-white outline-none focus:border-[#9e2a2b]"
+                          />
+                        </div>
 
-                  {/* Volume Cover with Crop */}
-                  <div className="space-y-2 pt-2 border-t border-[#161d28]">
-                    <ImageInputWithCrop
-                      label="VOLUME COVER ARTWORK (3:4 RATIO)"
-                      value={mangaRelease.coverImage}
-                      aspectRatioPreset="3:4"
-                      onChange={(newUrl: string) => {
-                        setMangaRelease({ ...mangaRelease, coverImage: newUrl });
-                      }}
-                    />
-                  </div>
+                        <div className="space-y-1">
+                          <label className="text-[11px] font-editorial-mono text-[#788698] uppercase block">
+                            CATEGORY:
+                          </label>
+                          <select
+                            value={editingCountdown.category || 'Manga Volume'}
+                            onChange={(e) =>
+                              setEditingCountdown({ ...editingCountdown, category: e.target.value })
+                            }
+                            className="w-full bg-[#05070a] border border-[#1b2533] px-3 py-2 text-xs font-editorial-mono text-white outline-none focus:border-[#9e2a2b]"
+                          >
+                            <option value="Manga Volume">Manga Volume</option>
+                            <option value="Book / Light Novel">Book / Light Novel</option>
+                            <option value="Anime PV Premiere">Anime PV Premiere</option>
+                            <option value="Special Release">Special Release</option>
+                            <option value="Merchandise">Merchandise</option>
+                          </select>
+                        </div>
+                      </div>
 
-                  <button
-                    type="submit"
-                    disabled={saving}
-                    className="w-full sm:w-auto px-8 py-3 bg-[#9e2a2b] hover:bg-[#b53235] text-white text-xs font-cinzel tracking-widest uppercase font-semibold border border-[#9e2a2b] transition-all disabled:opacity-50"
-                  >
-                    {saving ? '[ SAVING... ]' : '[ SAVE MANGA RELEASE ]'}
-                  </button>
-                </form>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="space-y-1">
+                          <label className="text-[11px] font-editorial-mono text-[#788698] uppercase block">
+                            VOLUME NUMBER / BADGE:
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="e.g. Volume 02, Book I"
+                            value={editingCountdown.volumeNumber || ''}
+                            onChange={(e) =>
+                              setEditingCountdown({ ...editingCountdown, volumeNumber: e.target.value })
+                            }
+                            className="w-full bg-[#05070a] border border-[#1b2533] px-3 py-2 text-xs font-editorial-mono text-white outline-none focus:border-[#9e2a2b]"
+                          />
+                        </div>
+
+                        <div className="space-y-1">
+                          <label className="text-[11px] font-editorial-mono text-[#788698] uppercase block">
+                            SUBTITLE:
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="e.g. THE WHITE SOVEREIGN"
+                            value={editingCountdown.subtitle || ''}
+                            onChange={(e) =>
+                              setEditingCountdown({ ...editingCountdown, subtitle: e.target.value })
+                            }
+                            className="w-full bg-[#05070a] border border-[#1b2533] px-3 py-2 text-xs font-editorial-mono text-white outline-none focus:border-[#9e2a2b]"
+                          />
+                        </div>
+
+                        <div className="space-y-1">
+                          <label className="text-[11px] font-editorial-mono text-[#788698] uppercase block">
+                            CHAPTER RANGE:
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="e.g. Chapters 06–12"
+                            value={editingCountdown.chapterRange || ''}
+                            onChange={(e) =>
+                              setEditingCountdown({ ...editingCountdown, chapterRange: e.target.value })
+                            }
+                            className="w-full bg-[#05070a] border border-[#1b2533] px-3 py-2 text-xs font-editorial-mono text-white outline-none focus:border-[#9e2a2b]"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-1">
+                          <label className="text-[11px] font-editorial-mono text-[#788698] uppercase block">
+                            OFFICIAL READER / PRE-ORDER URL:
+                          </label>
+                          <input
+                            type="url"
+                            placeholder="https://..."
+                            value={editingCountdown.mangaUrl || ''}
+                            onChange={(e) =>
+                              setEditingCountdown({ ...editingCountdown, mangaUrl: e.target.value })
+                            }
+                            className="w-full bg-[#05070a] border border-[#1b2533] px-3 py-2 text-xs font-editorial-mono text-white outline-none focus:border-[#9e2a2b]"
+                          />
+                        </div>
+
+                        <div className="space-y-1">
+                          <label className="text-[11px] font-editorial-mono text-[#788698] uppercase block">
+                            STATUS:
+                          </label>
+                          <select
+                            value={editingCountdown.status || 'Scheduled'}
+                            onChange={(e) =>
+                              setEditingCountdown({
+                                ...editingCountdown,
+                                status: e.target.value as 'Scheduled' | 'Released' | 'Hidden',
+                              })
+                            }
+                            className="w-full bg-[#05070a] border border-[#1b2533] px-3 py-2 text-xs font-editorial-mono text-white outline-none focus:border-[#9e2a2b]"
+                          >
+                            <option value="Scheduled">Scheduled (Live Countdown Running)</option>
+                            <option value="Released">Released (Immediate Unsealed Reader Access)</option>
+                            <option value="Hidden">Hidden (Draft)</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      {/* Release Timestamp with quick preset buttons */}
+                      <div className="space-y-2 p-4 border border-[#1c2635] bg-[#070a10]">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                          <label className="text-[11px] font-editorial-mono text-[#788698] uppercase block">
+                            SCHEDULED RELEASE TIMESTAMP:
+                          </label>
+                          <div className="flex items-center gap-1.5 text-[11px] font-editorial-mono text-[#8a99ac]">
+                            <span>PRESETS:</span>
+                            {[
+                              { label: '+24h', ms: 24 * 60 * 60 * 1000 },
+                              { label: '+3d', ms: 3 * 24 * 60 * 60 * 1000 },
+                              { label: '+7d', ms: 7 * 24 * 60 * 60 * 1000 },
+                              { label: '+30d', ms: 30 * 24 * 60 * 60 * 1000 },
+                            ].map((p) => (
+                              <button
+                                key={p.label}
+                                type="button"
+                                onClick={() => {
+                                  const d = new Date(Date.now() + p.ms).toISOString();
+                                  setEditingCountdown({ ...editingCountdown, releaseAt: d });
+                                }}
+                                className="px-2 py-0.5 border border-[#212c3b] bg-[#0b1017] hover:border-[#9e2a2b] hover:text-white"
+                              >
+                                {p.label}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        <input
+                          type="datetime-local"
+                          value={
+                            editingCountdown.releaseAt
+                              ? new Date(editingCountdown.releaseAt).toISOString().slice(0, 16)
+                              : ''
+                          }
+                          onChange={(e) => {
+                            const iso = new Date(e.target.value).toISOString();
+                            setEditingCountdown({ ...editingCountdown, releaseAt: iso });
+                          }}
+                          className="w-full bg-[#05070a] border border-[#1b2533] px-3 py-2 text-xs font-editorial-mono text-white outline-none focus:border-[#9e2a2b]"
+                        />
+                      </div>
+
+                      {/* Featured on Home toggle */}
+                      <label className="flex items-center gap-2 cursor-pointer text-xs font-editorial-mono text-[#a3b1c2]">
+                        <input
+                          type="checkbox"
+                          checked={Boolean(editingCountdown.isFeatured)}
+                          onChange={(e) =>
+                            setEditingCountdown({ ...editingCountdown, isFeatured: e.target.checked })
+                          }
+                          className="accent-[#9e2a2b] w-4 h-4"
+                        />
+                        <span>Feature this countdown as primary showcase on homepage & hero</span>
+                      </label>
+
+                      <div className="space-y-1">
+                        <label className="text-[11px] font-editorial-mono text-[#788698] uppercase block">
+                          SYNOPSIS & DESCRIPTION:
+                        </label>
+                        <textarea
+                          rows={3}
+                          value={editingCountdown.description || ''}
+                          onChange={(e) =>
+                            setEditingCountdown({ ...editingCountdown, description: e.target.value })
+                          }
+                          className="w-full bg-[#05070a] border border-[#1b2533] px-3 py-2 text-xs font-editorial-mono text-white outline-none focus:border-[#9e2a2b]"
+                        />
+                      </div>
+
+                      {/* Volume Cover with Crop */}
+                      <div className="space-y-2 pt-2 border-t border-[#161d28]">
+                        <ImageInputWithCrop
+                          label="VOLUME / BOOK COVER ARTWORK (3:4 RATIO)"
+                          value={editingCountdown.coverImage}
+                          aspectRatioPreset="3:4"
+                          onChange={(newUrl: string) => {
+                            setEditingCountdown({ ...editingCountdown, coverImage: newUrl });
+                          }}
+                        />
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        <button
+                          type="submit"
+                          disabled={saving}
+                          className="px-8 py-3 bg-[#9e2a2b] hover:bg-[#b53235] text-white text-xs font-cinzel tracking-widest uppercase font-semibold border border-[#9e2a2b] transition-all disabled:opacity-50"
+                        >
+                          {saving ? '[ SAVING... ]' : '[ SAVE COUNTDOWN ]'}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setEditingCountdown(null);
+                            setIsNewCountdown(false);
+                          }}
+                          className="px-6 py-3 border border-[#222d3b] text-[#78889b] hover:text-white text-xs font-cinzel tracking-wider uppercase transition-colors"
+                        >
+                          [ CANCEL ]
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                )}
+
+                {/* List of All Countdowns */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  {countdowns.map((item) => {
+                    const releaseDate = new Date(item.releaseAt);
+                    const isPassed = Date.now() >= releaseDate.getTime();
+                    const isReleased = item.status === 'Released' || isPassed;
+
+                    return (
+                      <div
+                        key={item.id}
+                        className={`border p-5 bg-[#070b10] flex flex-col justify-between space-y-4 relative transition-all ${
+                          item.isFeatured
+                            ? 'border-[#9e2a2b] shadow-[0_0_20px_rgba(158,42,43,0.2)]'
+                            : 'border-[#1b2432] hover:border-[#2f3d52]'
+                        }`}
+                      >
+                        {/* Top Meta info */}
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex items-start gap-3">
+                            {/* Thumbnail */}
+                            <div className="w-14 h-18 sm:w-16 sm:h-20 aspect-[3/4] bg-[#0c1219] border border-[#202c3c] overflow-hidden shrink-0">
+                              {item.coverImage ? (
+                                <img
+                                  src={item.coverImage}
+                                  alt={item.title}
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center text-[10px] text-[#4d5c6f] font-editorial-mono">
+                                  COVER
+                                </div>
+                              )}
+                            </div>
+
+                            <div className="space-y-1">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <span className="px-2 py-0.5 bg-[#1b232e] text-[#f2afb2] text-[10px] font-editorial-mono uppercase tracking-wider">
+                                  {item.volumeNumber || 'RELEASE'}
+                                </span>
+                                {item.category && (
+                                  <span className="text-[10px] font-editorial-mono text-[#8997a8] border border-[#1b2432] px-1.5 py-0.5">
+                                    {item.category}
+                                  </span>
+                                )}
+                                {item.isFeatured && (
+                                  <span className="flex items-center gap-1 text-[10px] font-editorial-mono text-amber-400 bg-amber-950/40 border border-amber-800/60 px-1.5 py-0.5">
+                                    <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
+                                    <span>FEATURED ON HOME</span>
+                                  </span>
+                                )}
+                              </div>
+
+                              <h3 className="font-cinzel text-sm sm:text-base text-white font-semibold leading-snug">
+                                {item.title}
+                              </h3>
+                              {item.subtitle && (
+                                <p className="text-[11px] font-editorial-mono text-[#6c7d91]">
+                                  {item.subtitle}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+
+                          <div className="text-right shrink-0">
+                            <span
+                              className={`text-[10px] font-editorial-mono uppercase px-2 py-0.5 border block ${
+                                item.status === 'Released' || isPassed
+                                  ? 'border-emerald-800 bg-emerald-950/40 text-emerald-400'
+                                  : item.status === 'Hidden'
+                                  ? 'border-[#333] bg-[#111] text-[#777]'
+                                  : 'border-[#9e2a2b] bg-[#220a0d] text-[#f2afb2]'
+                              }`}
+                            >
+                              {item.status}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Release schedule indicator */}
+                        <div className="p-2.5 bg-[#05080c] border border-[#141c28] text-xs font-editorial-mono flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                          <div className="flex items-center gap-1.5 text-[#8695a7]">
+                            <Calendar className="w-3.5 h-3.5 text-[#9e2a2b]" />
+                            <span>
+                              {new Date(item.releaseAt).toLocaleString(undefined, {
+                                month: 'short',
+                                day: 'numeric',
+                                year: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                              })}
+                            </span>
+                          </div>
+
+                          <span className={`text-[11px] ${isReleased ? 'text-emerald-400 font-bold' : 'text-[#f2afb2]'}`}>
+                            {isReleased ? '✓ PUBLISHED / UNLOCKED' : '⏳ COUNTDOWN ACTIVE'}
+                          </span>
+                        </div>
+
+                        {/* Actions Toolbar */}
+                        <div className="pt-2 border-t border-[#131b26] flex items-center justify-between gap-1 flex-wrap">
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            {/* Reschedule Button */}
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setRescheduleItem({
+                                  id: item.id,
+                                  title: `${item.title} (${item.volumeNumber || ''})`,
+                                  releaseAt: item.releaseAt,
+                                  status: item.status,
+                                })
+                              }
+                              className="px-2.5 py-1.5 border border-[#232f41] hover:border-[#9e2a2b] text-[11px] font-editorial-mono text-[#8a99ac] hover:text-white flex items-center gap-1 transition-colors"
+                              title="Reschedule countdown release time"
+                            >
+                              <Calendar className="w-3 h-3 text-[#9e2a2b]" />
+                              <span>RESCHEDULE</span>
+                            </button>
+
+                            {/* Edit Button */}
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setEditingCountdown({ ...item });
+                                setIsNewCountdown(false);
+                              }}
+                              className="px-2.5 py-1.5 border border-[#232f41] hover:border-white text-[11px] font-editorial-mono text-[#8a99ac] hover:text-white flex items-center gap-1 transition-colors"
+                              title="Edit all volume and release details"
+                            >
+                              <Edit className="w-3 h-3" />
+                              <span>EDIT</span>
+                            </button>
+
+                            {/* Feature on Home */}
+                            {!item.isFeatured && (
+                              <button
+                                type="button"
+                                onClick={() => handleFeatureCountdown(item.id)}
+                                className="px-2.5 py-1.5 border border-[#232f41] hover:border-amber-500 text-[11px] font-editorial-mono text-[#8a99ac] hover:text-amber-300 flex items-center gap-1 transition-colors"
+                                title="Set as featured hero countdown on public site"
+                              >
+                                <Star className="w-3 h-3" />
+                                <span>FEATURE</span>
+                              </button>
+                            )}
+
+                            {/* Immediate Release */}
+                            {item.status !== 'Released' && (
+                              <button
+                                type="button"
+                                onClick={() => handlePublishCountdownNow(item.id)}
+                                className="px-2.5 py-1.5 border border-emerald-900/80 bg-emerald-950/20 hover:bg-emerald-900/40 text-[11px] font-editorial-mono text-emerald-400 flex items-center gap-1 transition-colors"
+                                title="Force release reader immediately"
+                              >
+                                <CheckCircle2 className="w-3 h-3" />
+                                <span>RELEASE NOW</span>
+                              </button>
+                            )}
+                          </div>
+
+                          {/* Delete Countdown (Allowed if > 1 countdown) */}
+                          {countdowns.length > 1 && (
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteCountdown(item.id)}
+                              className="p-1.5 text-[#5e6c7d] hover:text-rose-400 hover:bg-rose-950/30 transition-colors ml-auto"
+                              title="Delete this countdown"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             )}
 

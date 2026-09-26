@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Lock, Shield, ArrowLeft, KeyRound } from 'lucide-react';
+import { setAdminToken } from '../../utils/adminApi';
 
 interface AdminLoginProps {
   onLoginSuccess: () => void;
@@ -21,10 +22,14 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess, onCancel
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password }),
+        credentials: 'include',
       });
 
       const data = await res.json();
       if (res.ok && data.success) {
+        if (data.token) {
+          setAdminToken(data.token);
+        }
         onLoginSuccess();
       } else {
         setError(data.error || 'Authentication failed. Please verify credentials.');

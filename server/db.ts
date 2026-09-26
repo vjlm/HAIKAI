@@ -157,22 +157,87 @@ const initialAdmin = hashPassword(defaultMasterPassword);
 
 let dbCache: DatabaseSchema | null = null;
 
+function normalizeDatabase(db: DatabaseSchema): DatabaseSchema {
+  // Guarantee settings has all default fields
+  db.settings = {
+    ...DEFAULT_SETTINGS,
+    ...(db.settings || {}),
+    visibleSections: {
+      ...DEFAULT_SETTINGS.visibleSections,
+      ...(db.settings?.visibleSections || {}),
+    },
+    socialLinks: {
+      ...DEFAULT_SETTINGS.socialLinks,
+      ...(db.settings?.socialLinks || {}),
+    },
+  };
+
+  // Guarantee mangaRelease exists
+  if (!db.mangaRelease) {
+    db.mangaRelease = { ...DEFAULT_MANGA_RELEASE };
+  }
+
+  // Guarantee countdowns list exists and has at least mangaRelease
+  if (!db.countdowns || !Array.isArray(db.countdowns) || db.countdowns.length === 0) {
+    db.countdowns = [{ ...db.mangaRelease, isFeatured: true }];
+  } else {
+    // Ensure every countdown has valid fields
+    db.countdowns = db.countdowns.map((c, i) => ({
+      id: c?.id || `countdown-${i}-${Date.now()}`,
+      title: c?.title || 'HAIKAI Release',
+      volumeNumber: c?.volumeNumber || `Volume 0${i + 1}`,
+      subtitle: c?.subtitle || '',
+      chapterRange: c?.chapterRange || '',
+      category: c?.category || 'Manga',
+      description: c?.description || '',
+      coverImage: c?.coverImage || '/manga-cover-vol1.svg',
+      releaseAt: c?.releaseAt || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+      mangaUrl: c?.mangaUrl || 'https://haikai-manga.official.jp',
+      status: c?.status || 'Scheduled',
+      openInNewTab: c?.openInNewTab !== false,
+      isFeatured: Boolean(c?.isFeatured),
+      createdAt: c?.createdAt || new Date().toISOString(),
+      updatedAt: c?.updatedAt || new Date().toISOString(),
+    }));
+  }
+
+  if (!db.trailers || db.trailers.length === 0) {
+    db.trailers = (TRAILERS || []).map((t, i) => ({ ...t, status: 'Published', displayOrder: i }));
+  }
+  if (!db.characters || db.characters.length === 0) {
+    db.characters = CHARACTERS.map((c, i) => ({ ...c, status: 'Published', displayOrder: i }));
+  }
+  if (!db.regions || db.regions.length === 0) {
+    db.regions = REGIONS.map((r, i) => ({ ...r, status: 'Published', displayOrder: i }));
+  }
+  if (!db.storyArcs || db.storyArcs.length === 0) {
+    db.storyArcs = STORY_ARCS.map((s, i) => ({ ...s, status: 'Published', displayOrder: i }));
+  }
+  if (!db.mysteries || db.mysteries.length === 0) {
+    db.mysteries = MYSTERY_FILES.map((m, i) => ({ ...m, status: 'Published', displayOrder: i }));
+  }
+  if (!db.galleryItems || db.galleryItems.length === 0) {
+    db.galleryItems = GALLERY_ITEMS.map((g, i) => ({ ...g, status: 'Published', displayOrder: i }));
+  }
+  if (!db.sessions) {
+    db.sessions = {};
+  }
+  if (!db.auditLogs) {
+    db.auditLogs = [];
+  }
+  return db;
+}
+
 function loadDatabase(): DatabaseSchema {
-  if (dbCache) return dbCache;
+  if (dbCache) return normalizeDatabase(dbCache);
 
   // 1. Try runtime DB_FILE (e.g., /tmp/haikai_data/haikai_db.json or ./data/haikai_db.json)
   if (fs.existsSync(DB_FILE)) {
     try {
       const raw = fs.readFileSync(DB_FILE, 'utf-8');
-      dbCache = JSON.parse(raw);
-      if (!dbCache!.trailers || dbCache!.trailers.length === 0) {
-        dbCache!.trailers = (TRAILERS || []).map((t, i) => ({ ...t, status: 'Published', displayOrder: i }));
-      }
-      if (!dbCache!.countdowns || dbCache!.countdowns.length === 0) {
-        dbCache!.countdowns = [{ ...dbCache!.mangaRelease, isFeatured: true }];
-      }
-      saveDatabase(dbCache!);
-      return dbCache!;
+      dbCache = normalizeDatabase(JSON.parse(raw));
+      saveDatabase(dbCache);
+      return dbCache;
     } catch (err) {
       console.error('[DB] Failed to parse haikai_db.json from DB_FILE:', err);
     }
@@ -182,16 +247,9 @@ function loadDatabase(): DatabaseSchema {
   if (DB_FILE !== BUNDLED_DB_FILE && fs.existsSync(BUNDLED_DB_FILE)) {
     try {
       const raw = fs.readFileSync(BUNDLED_DB_FILE, 'utf-8');
-      dbCache = JSON.parse(raw);
-      if (!dbCache!.trailers || dbCache!.trailers.length === 0) {
-        dbCache!.trailers = (TRAILERS || []).map((t, i) => ({ ...t, status: 'Published', displayOrder: i }));
-      }
-      if (!dbCache!.countdowns || dbCache!.countdowns.length === 0) {
-        dbCache!.countdowns = [{ ...dbCache!.mangaRelease, isFeatured: true }];
-      }
-      // Best-effort cache to writable location
-      saveDatabase(dbCache!);
-      return dbCache!;
+      dbCache = normalizeDatabase(JSON.parse(raw));
+      saveDatabase(dbCache);
+      return dbCache;
     } catch (err) {
       console.error('[DB] Failed to parse haikai_db.json from BUNDLED_DB_FILE:', err);
     }

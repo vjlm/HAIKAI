@@ -5,15 +5,38 @@
     "japaneseTitle": "灰海",
     "tagline": "“Was this world ever meant to be saved?”",
     "ctaPrimaryLabel": "[ ENTER THE WORLD → ]",
+    "ctaPrimaryLink": "#manga",
     "ctaSecondaryLabel": "[ MEET THE CHARACTERS ]",
+    "ctaSecondaryLink": "#characters",
     "heroNotice": "",
     "showHeroNotice": false,
+    "accentColor": "#9e2a2b",
+    "showAshParticles": true,
+    "animationSpeed": "cinematic",
+    "visibleSections": {
+      "introduction": true,
+      "seaOfAsh": true,
+      "world": true,
+      "characters": true,
+      "ashSection": true,
+      "relationships": true,
+      "romance": true,
+      "oathSystem": true,
+      "storyArcs": true,
+      "mysteries": true,
+      "manga": true,
+      "warRecords": true,
+      "trailers": true,
+      "gallery": true,
+      "finalQuestion": true
+    },
     "socialLinks": {
       "x": "https://x.com/haikai_official",
       "instagram": "https://instagram.com/haikai_manga",
       "youtube": "https://youtube.com",
       "discord": "https://discord.gg"
     },
+    "footerCredits": "HAIKAI PRODUCTION COMMITTEE · ALL RIGHTS RESERVED",
     "seoDescription": "Enter the world of HAIKAI — a dark fantasy mystery surrounding the Sea of Ash, the First Flood, and a civilization built on forgotten truth.",
     "updatedAt": "2026-09-25T04:46:52.328Z"
   },
@@ -573,8 +596,8 @@
     }
   ],
   "admin": {
-    "passwordHash": "d613f7ea3e66b2dfd297cc4dc508e4a87339fea20beda4482e4ddbed402bddf606829449876f130ea6ce76296a1d72342e57faf3b66cbb3c10a9cc09b1983981",
-    "salt": "f2e7046e0e009a50a69bdfa4bd60c909"
+    "passwordHash": "cbd5b9378e69ce800042c0ac85b9762c0a89a0a9ddcbf36ce79ec84cf1b710c77ac50e722491bb4f1caef75e6a925b392d42c70dad7d908eccd143b016396f10",
+    "salt": "027ea2e26cbf8ed6a50a952f5188712e"
   },
   "sessions": {
     "3f17b72a1a9d6322c063803f35cf3f392c55de0f7ab2ea3033ece502d8337f2b": {
@@ -596,9 +619,53 @@
     "01173c1ae9730e06aaf991e6bfb4ba9da61c5b1da33c2eece456e39d7eb033ad": {
       "username": "Owner",
       "expiresAt": 1790932021246
+    },
+    "1fd29a4d5ae6ef9e81710ac3b0cae201dedb7d1cea9791fce6267422d66d4ba8": {
+      "username": "Owner",
+      "expiresAt": 1791012442114
+    },
+    "aaeabf2bcc2d291f731589dade409638d17dd5820525d43e4aaa4cc99cb16049": {
+      "username": "Owner",
+      "expiresAt": 1791013144772
     }
   },
   "auditLogs": [
+    {
+      "id": "3a49282d-54b7-4b8b-9958-d347b95929cd",
+      "timestamp": "2026-09-26T07:39:04.846Z",
+      "user": "Owner",
+      "action": "LOGIN_SUCCESS",
+      "contentType": "Auth",
+      "contentId": "aaeabf2b",
+      "details": "Owner logged in successfully"
+    },
+    {
+      "id": "d177c5b9-e3fd-4844-8228-20d0714756b2",
+      "timestamp": "2026-09-26T07:27:22.170Z",
+      "user": "Owner",
+      "action": "RESCHEDULE_COUNTDOWN",
+      "contentType": "Countdown",
+      "contentId": "countdown-1790407634230",
+      "details": "Rescheduled to 2026-11-01T12:00:00.000Z (Status: Scheduled)"
+    },
+    {
+      "id": "71eecf2d-73a2-4035-94b4-2d4108b8d2e6",
+      "timestamp": "2026-09-26T07:27:14.230Z",
+      "user": "Owner",
+      "action": "CREATE_COUNTDOWN",
+      "contentType": "Countdown",
+      "contentId": "countdown-1790407634230",
+      "details": "Created countdown: HAIKAI: VOLUME 02 — THE WHITE SOVEREIGN"
+    },
+    {
+      "id": "d750d509-05f6-4606-a202-4277d16f44be",
+      "timestamp": "2026-09-26T07:27:06.365Z",
+      "user": "Owner",
+      "action": "LOGIN_SUCCESS",
+      "contentType": "Auth",
+      "contentId": "1fd29a4d",
+      "details": "Owner logged in successfully"
+    },
     {
       "id": "c9904c10-ced9-495c-9fb9-fbabe2f11bbc",
       "timestamp": "2026-09-25T09:07:04.311Z",
@@ -757,6 +824,42 @@
       "category": "Official Trailer",
       "status": "Published",
       "displayOrder": 0
+    }
+  ],
+  "countdowns": [
+    {
+      "id": "manga-vol-01",
+      "title": "HAIKAI — THE SEA OF ASH",
+      "volumeNumber": "Volume 01",
+      "subtitle": "FIRST PUBLICATION · CHAPTERS 01–05",
+      "chapterRange": "Chapters 01–05: The Salvage Boy to The War Records",
+      "category": "Manga",
+      "description": "Seventeen-year-old salvage diver Nero Vale pulls an impossible pre-Flood bronze cylinder from the midnight shelf, triggering an imperial manhunt that shatters three thousand years of Crownlands peace.",
+      "coverImage": "data:image/webp;base64,UklGRrYJAABXRUJQVlA4WAoAAAAgAAAAgwMArwQASUNDUMgBAAAAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADZWUDggyAcAADDpAJ0BKoQDsAQ+KRSJQ6GhIRAEABgChLS3cLuwjaAFZu14uTkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+1YAAP7/+Rav87HtcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+      "releaseAt": "2026-09-24T04:47:11.281Z",
+      "mangaUrl": "https://haikai-manga.official.jp/read/volume-01",
+      "status": "Released",
+      "openInNewTab": true,
+      "isFeatured": true,
+      "createdAt": "2026-09-25T04:46:52.328Z",
+      "updatedAt": "2026-09-25T09:07:04.251Z"
+    },
+    {
+      "id": "countdown-1790407634230",
+      "title": "HAIKAI: VOLUME 02 — THE WHITE SOVEREIGN",
+      "volumeNumber": "Volume 02",
+      "subtitle": "THE MIDNIGHT SHELF",
+      "chapterRange": "",
+      "category": "Manga Volume",
+      "description": "The second major chronicle following Nero Vale into the Crownlands.",
+      "coverImage": "/assets/manga_vol_01_cover.webp",
+      "releaseAt": "2026-11-01T12:00:00.000Z",
+      "mangaUrl": "https://haikai-manga.official.jp/read/volume-02",
+      "status": "Scheduled",
+      "openInNewTab": true,
+      "isFeatured": false,
+      "createdAt": "2026-09-26T07:27:14.230Z",
+      "updatedAt": "2026-09-26T07:27:22.114Z"
     }
   ]
 }

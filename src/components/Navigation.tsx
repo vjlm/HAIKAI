@@ -1,16 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Volume2, VolumeX, Menu, X, ShieldAlert, BookOpen } from 'lucide-react';
+import { Volume2, VolumeX, Menu, X, ShieldAlert, BookOpen, Lock } from 'lucide-react';
 import { soundManager } from '../utils/audio';
 import { HaikaiLogo } from './HaikaiLogo';
 import { VisibleSections } from '../types/haikai';
 
 interface NavigationProps {
   onOpenSpoilerModal: () => void;
+  onOpenAdmin?: () => void;
   visibleSections?: VisibleSections;
 }
 
 export const Navigation: React.FC<NavigationProps> = ({
   onOpenSpoilerModal,
+  onOpenAdmin,
   visibleSections,
 }) => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -245,6 +247,23 @@ export const Navigation: React.FC<NavigationProps> = ({
               <span className="font-editorial-mono text-[11px] tracking-wider">
                 {isMuted ? 'SOUND: OFF (TAP TO UNMUTE)' : 'SOUND: PLAYING IN LOOP'}
               </span>
+            </button>
+
+            {/* Owner Gateway access in mobile drawer */}
+            <button
+              onClick={() => {
+                setMobileMenuOpen(false);
+                if (onOpenAdmin) {
+                  onOpenAdmin();
+                } else if (typeof window !== 'undefined') {
+                  window.location.hash = '#admin';
+                }
+              }}
+              type="button"
+              className="mt-2 flex items-center justify-center gap-2 px-4 py-2.5 text-[11px] font-editorial-mono uppercase tracking-widest text-[#78889b] hover:text-[#f2afb2] border border-[#1b2533] bg-[#080b10] min-h-[40px] w-full max-w-xs"
+            >
+              <Lock className="w-3.5 h-3.5 text-[#9e2a2b]" />
+              <span>OWNER GATEWAY / CMS</span>
             </button>
           </nav>
 

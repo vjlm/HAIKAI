@@ -47,11 +47,16 @@ function recordLoginFailure(ip: string) {
 
 // Authentication middleware for /api/admin/*
 export function requireAdmin(req: Request, res: Response, next: NextFunction) {
+  const authHeader = req.headers.authorization || '';
+  const bearerToken =
+    authHeader.toLowerCase().startsWith('bearer ')
+      ? authHeader.slice(7).trim()
+      : null;
+
   const sessionToken =
-    req.cookies?.haikai_admin_session ||
-    (req.headers.authorization?.startsWith('Bearer ')
-      ? req.headers.authorization.substring(7)
-      : null);
+    (req.headers['x-admin-token'] as string | undefined) ||
+    bearerToken ||
+    req.cookies?.haikai_admin_session;
 
   if (!sessionToken) {
     return res.status(401).json({ error: 'Unauthorized: Admin session required' });
@@ -188,11 +193,12 @@ apiRouter.post('/admin/login', (req: Request, res: Response) => {
   };
   saveDatabase(db);
 
-  // Set HTTP-Only Cookie
+  // Set HTTP-Only Cookie with cross-origin support for preview iframes
+  const isHttps = req.secure || req.headers['x-forwarded-proto'] === 'https' || process.env.NODE_ENV === 'production';
   res.cookie('haikai_admin_session', token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
+    secure: isHttps,
+    sameSite: isHttps ? 'none' : 'lax',
     maxAge: 7 * 24 * 60 * 60 * 1000,
     path: '/',
   });
@@ -202,11 +208,16 @@ apiRouter.post('/admin/login', (req: Request, res: Response) => {
 });
 
 apiRouter.post('/admin/logout', requireAdmin, (req: Request, res: Response) => {
+  const authHeader = req.headers.authorization || '';
+  const bearerToken =
+    authHeader.toLowerCase().startsWith('bearer ')
+      ? authHeader.slice(7).trim()
+      : null;
+
   const sessionToken =
-    req.cookies?.haikai_admin_session ||
-    (req.headers.authorization?.startsWith('Bearer ')
-      ? req.headers.authorization.substring(7)
-      : null);
+    (req.headers['x-admin-token'] as string | undefined) ||
+    bearerToken ||
+    req.cookies?.haikai_admin_session;
 
   const db = getDatabase();
   if (sessionToken && db.sessions[sessionToken]) {
@@ -220,11 +231,16 @@ apiRouter.post('/admin/logout', requireAdmin, (req: Request, res: Response) => {
 });
 
 apiRouter.get(['/admin/check-session', '/admin/me'], (req: Request, res: Response) => {
+  const authHeader = req.headers.authorization || '';
+  const bearerToken =
+    authHeader.toLowerCase().startsWith('bearer ')
+      ? authHeader.slice(7).trim()
+      : null;
+
   const sessionToken =
-    req.cookies?.haikai_admin_session ||
-    (req.headers.authorization?.startsWith('Bearer ')
-      ? req.headers.authorization.substring(7)
-      : null);
+    (req.headers['x-admin-token'] as string | undefined) ||
+    bearerToken ||
+    req.cookies?.haikai_admin_session;
 
   if (!sessionToken) {
     return res.json({ authenticated: false });
@@ -244,7 +260,7 @@ apiRouter.get(['/admin/check-session', '/admin/me'], (req: Request, res: Respons
   session.expiresAt = Date.now() + 7 * 24 * 60 * 60 * 1000;
   return res.json({
     authenticated: true,
-    user: session.username || 'Owner',
+    username: session.username,
   });
 });
 
@@ -383,6 +399,237 @@ apiRouter.post('/admin/manga/publish-now', requireAdmin, (_req: Request, res: Re
   saveDatabase(db);
   recordAudit('Owner', 'FORCE_RELEASE_MANGA', 'MangaRelease', db.mangaRelease.id, 'Volume 01 immediately released');
   res.json({ success: true, mangaRelease: db.mangaRelease });
+});
+
+/* ==========================================================================
+   COUNTDOWNS / MULTI-RELEASE MANAGEMENT (Books, Volumes, Special Releases)
+   ========================================================================== */
+
+// Get all countdown items for admin
+apiRouter.get('/admin/countdowns', requireAdmin, (_req: Request, res: Response) => {
+  const db = getDatabase();
+  const countdowns = db.countdowns && db.countdowns.length > 0 ? db.countdowns : [db.mangaRelease];
+  res.json({ success: true, countdowns });
+});
+
+// Create or update a countdown item
+apiRouter.post('/admin/countdowns', requireAdmin, (req: Request, res: Response) => {
+  const countdown = req.body as Partial<MangaRelease>;
+  const db = getDatabase();
+  if (!db.countdowns) {
+    db.countdowns = [{ ...db.mangaRelease, isFeatured: true }];
+  }
+
+  if (!countdown.title && !countdown.volumeNumber) {
+    return res.status(400).json({ error: 'Title or volume identifier is required.' });
+  }
+
+  // Validate URL if present
+  if (countdown.mangaUrl) {
+    try {
+      const parsed = new URL(countdown.mangaUrl);
+      if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+        return res.status(400).json({ error: 'Target URL must be a valid HTTP or HTTPS address.' });
+      }
+    } catch {
+      return res.status(400).json({ error: 'Please enter a valid target URL.' });
+    }
+  }
+
+  // Validate release date if provided
+  if (countdown.releaseAt) {
+    const d = new Date(countdown.releaseAt);
+    if (isNaN(d.getTime())) {
+      return res.status(400).json({ error: 'Invalid release date format.' });
+    }
+    countdown.releaseAt = d.toISOString();
+  }
+
+  const existingIndex = countdown.id ? db.countdowns.findIndex((c) => c.id === countdown.id) : -1;
+  const now = new Date().toISOString();
+
+  if (existingIndex >= 0) {
+    // If setting as featured, unfeature others
+    if (countdown.isFeatured) {
+      db.countdowns.forEach((c) => (c.isFeatured = false));
+    }
+
+    db.countdowns[existingIndex] = {
+      ...db.countdowns[existingIndex],
+      ...countdown,
+      updatedAt: now,
+    };
+
+    // If this item is featured or matches mangaRelease id, sync to mangaRelease as well
+    if (countdown.isFeatured || db.countdowns[existingIndex].id === db.mangaRelease.id) {
+      db.mangaRelease = {
+        ...db.mangaRelease,
+        ...db.countdowns[existingIndex],
+      };
+    }
+
+    recordAudit(
+      'Owner',
+      'UPDATE_COUNTDOWN',
+      'Countdown',
+      db.countdowns[existingIndex].id,
+      `Updated countdown: ${db.countdowns[existingIndex].title} (${db.countdowns[existingIndex].releaseAt})`
+    );
+  } else {
+    const id = countdown.id || `countdown-${Date.now()}`;
+    const isFirst = db.countdowns.length === 0;
+    const shouldBeFeatured = countdown.isFeatured || isFirst;
+
+    if (shouldBeFeatured) {
+      db.countdowns.forEach((c) => (c.isFeatured = false));
+    }
+
+    const newItem: MangaRelease = {
+      id,
+      title: countdown.title || 'Untitled Release',
+      volumeNumber: countdown.volumeNumber || 'New Volume',
+      subtitle: countdown.subtitle || '',
+      chapterRange: countdown.chapterRange || '',
+      category: countdown.category || 'Manga',
+      description: countdown.description || '',
+      coverImage: countdown.coverImage || '/assets/manga_vol_01_cover.webp',
+      releaseAt: countdown.releaseAt || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+      mangaUrl: countdown.mangaUrl || 'https://haikai-manga.official.jp',
+      status: countdown.status || 'Scheduled',
+      openInNewTab: countdown.openInNewTab !== false,
+      isFeatured: shouldBeFeatured,
+      createdAt: now,
+      updatedAt: now,
+    };
+
+    db.countdowns.push(newItem);
+
+    if (shouldBeFeatured) {
+      db.mangaRelease = { ...newItem };
+    }
+
+    recordAudit('Owner', 'CREATE_COUNTDOWN', 'Countdown', newItem.id, `Created countdown: ${newItem.title}`);
+  }
+
+  saveDatabase(db);
+  res.json({ success: true, countdowns: db.countdowns, mangaRelease: db.mangaRelease });
+});
+
+// Reschedule a countdown item
+apiRouter.post('/admin/countdowns/:id/reschedule', requireAdmin, (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { releaseAt, status } = req.body;
+  const db = getDatabase();
+  if (!db.countdowns) {
+    db.countdowns = [{ ...db.mangaRelease, isFeatured: true }];
+  }
+
+  const idx = db.countdowns.findIndex((c) => c.id === id);
+  if (idx < 0) {
+    return res.status(404).json({ error: 'Countdown not found' });
+  }
+
+  if (releaseAt) {
+    const d = new Date(releaseAt);
+    if (isNaN(d.getTime())) {
+      return res.status(400).json({ error: 'Invalid release date format' });
+    }
+    db.countdowns[idx].releaseAt = d.toISOString();
+  }
+
+  if (status && ['Scheduled', 'Released', 'Hidden'].includes(status)) {
+    db.countdowns[idx].status = status;
+  }
+
+  db.countdowns[idx].updatedAt = new Date().toISOString();
+
+  if (db.countdowns[idx].isFeatured || db.countdowns[idx].id === db.mangaRelease.id) {
+    db.mangaRelease = { ...db.mangaRelease, ...db.countdowns[idx] };
+  }
+
+  saveDatabase(db);
+  recordAudit(
+    'Owner',
+    'RESCHEDULE_COUNTDOWN',
+    'Countdown',
+    id,
+    `Rescheduled to ${db.countdowns[idx].releaseAt} (Status: ${db.countdowns[idx].status})`
+  );
+  res.json({ success: true, countdown: db.countdowns[idx], countdowns: db.countdowns, mangaRelease: db.mangaRelease });
+});
+
+// Feature a countdown
+apiRouter.post('/admin/countdowns/:id/feature', requireAdmin, (req: Request, res: Response) => {
+  const { id } = req.params;
+  const db = getDatabase();
+  if (!db.countdowns) {
+    db.countdowns = [{ ...db.mangaRelease, isFeatured: true }];
+  }
+
+  const target = db.countdowns.find((c) => c.id === id);
+  if (!target) {
+    return res.status(404).json({ error: 'Countdown not found' });
+  }
+
+  db.countdowns.forEach((c) => {
+    c.isFeatured = c.id === id;
+  });
+
+  db.mangaRelease = { ...target, isFeatured: true, updatedAt: new Date().toISOString() };
+  saveDatabase(db);
+  recordAudit('Owner', 'FEATURE_COUNTDOWN', 'Countdown', id, `Featured: ${target.title}`);
+  res.json({ success: true, countdowns: db.countdowns, mangaRelease: db.mangaRelease });
+});
+
+// Force release countdown immediately
+apiRouter.post('/admin/countdowns/:id/publish-now', requireAdmin, (req: Request, res: Response) => {
+  const { id } = req.params;
+  const db = getDatabase();
+  if (!db.countdowns) {
+    db.countdowns = [{ ...db.mangaRelease, isFeatured: true }];
+  }
+
+  const idx = db.countdowns.findIndex((c) => c.id === id);
+  if (idx < 0) {
+    return res.status(404).json({ error: 'Countdown not found' });
+  }
+
+  db.countdowns[idx].status = 'Released';
+  db.countdowns[idx].updatedAt = new Date().toISOString();
+
+  if (db.countdowns[idx].isFeatured || db.countdowns[idx].id === db.mangaRelease.id) {
+    db.mangaRelease = { ...db.mangaRelease, ...db.countdowns[idx] };
+  }
+
+  saveDatabase(db);
+  recordAudit('Owner', 'FORCE_RELEASE_COUNTDOWN', 'Countdown', id, `Released countdown: ${db.countdowns[idx].title}`);
+  res.json({ success: true, countdown: db.countdowns[idx], countdowns: db.countdowns, mangaRelease: db.mangaRelease });
+});
+
+// Delete countdown item
+apiRouter.delete('/admin/countdowns/:id', requireAdmin, (req: Request, res: Response) => {
+  const { id } = req.params;
+  const db = getDatabase();
+  if (!db.countdowns || db.countdowns.length <= 1) {
+    return res.status(400).json({ error: 'Cannot delete the only remaining countdown.' });
+  }
+
+  const idx = db.countdowns.findIndex((c) => c.id === id);
+  if (idx < 0) {
+    return res.status(404).json({ error: 'Countdown not found' });
+  }
+
+  const wasFeatured = db.countdowns[idx].isFeatured;
+  const [deleted] = db.countdowns.splice(idx, 1);
+
+  if (wasFeatured && db.countdowns.length > 0) {
+    db.countdowns[0].isFeatured = true;
+    db.mangaRelease = { ...db.countdowns[0] };
+  }
+
+  saveDatabase(db);
+  recordAudit('Owner', 'DELETE_COUNTDOWN', 'Countdown', id, `Deleted countdown: ${deleted.title}`);
+  res.json({ success: true, countdowns: db.countdowns, mangaRelease: db.mangaRelease });
 });
 
 // Save Characters List / Item

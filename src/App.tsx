@@ -23,12 +23,34 @@ import { AdminLogin } from './components/admin/AdminLogin';
 import { AdminDashboard } from './components/admin/AdminDashboard';
 import { FloatingParticles } from './components/common/FloatingParticles';
 import { Eye, ShieldAlert } from 'lucide-react';
+import { adminFetch, clearAdminToken, getAdminToken } from './utils/adminApi';
+import { ErrorBoundary } from './components/common/ErrorBoundary';
+
+const getIsAdminPath = () => {
+  if (typeof window === 'undefined') return false;
+  const path = (window.location.pathname || '').toLowerCase();
+  const hash = (window.location.hash || '').toLowerCase();
+  const search = new URLSearchParams(window.location.search);
+  return (
+    path === '/admin' ||
+    path.startsWith('/admin/') ||
+    hash === '#admin' ||
+    hash === '#/admin' ||
+    hash.startsWith('#admin') ||
+    hash.startsWith('#/admin') ||
+    search.get('admin') === 'true' ||
+    search.has('admin')
+  );
+};
 
 export default function App() {
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const isInitialAdmin = getIsAdminPath();
+  const [isLoading, setIsLoading] = useState<boolean>(() => !isInitialAdmin);
   const [spoilerModalOpen, setSpoilerModalOpen] = useState<boolean>(false);
-  const [isAdminRoute, setIsAdminRoute] = useState<boolean>(false);
-  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState<boolean>(false);
+  const [isAdminRoute, setIsAdminRoute] = useState<boolean>(isInitialAdmin);
+  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState<boolean>(() => {
+    return Boolean(getAdminToken());
+  });
   const [isPreviewMode, setIsPreviewMode] = useState<boolean>(false);
 
   // Dynamic content loaded from server CMS
@@ -41,14 +63,24 @@ export default function App() {
     galleryItems?: any[];
     trailers?: any[];
     mangaRelease?: any;
+    countdowns?: any[];
   }>({});
 
-  // Check URL pathname or hash for /admin
+  // Check URL pathname, hash, or query parameter for /admin
   const checkRoute = useCallback(() => {
     if (typeof window !== 'undefined') {
-      const path = window.location.pathname;
-      const hash = window.location.hash;
-      const isAdmin = path === '/admin' || path.startsWith('/admin/') || hash === '#admin';
+      const path = (window.location.pathname || '').toLowerCase();
+      const hash = (window.location.hash || '').toLowerCase();
+      const search = new URLSearchParams(window.location.search);
+      const isAdmin =
+        path === '/admin' ||
+        path.startsWith('/admin/') ||
+        hash === '#admin' ||
+        hash === '#/admin' ||
+        hash.startsWith('#admin') ||
+        hash.startsWith('#/admin') ||
+        search.get('admin') === 'true' ||
+        search.has('admin');
       setIsAdminRoute(isAdmin);
 
       // Protect admin routes from search indexers
@@ -66,10 +98,10 @@ export default function App() {
     }
   }, []);
 
-  // Check Admin session with server
+  // Check Admin session with server using authenticated adminFetch
   const checkAdminAuth = useCallback(async () => {
     try {
-      const res = await fetch('/api/admin/check-session');
+      const res = await adminFetch('/api/admin/check-session');
       if (res.ok) {
         const data = await res.json();
         setIsAdminAuthenticated(data.authenticated === true);
@@ -94,6 +126,27 @@ export default function App() {
     }
   }, []);
 
+  // Navigate to admin smoothly in all browser and iframe environments
+  const navigateToAdmin = useCallback(() => {
+    if (typeof window !== 'undefined') {
+      window.location.hash = '#admin';
+      setIsAdminRoute(true);
+    }
+  }, []);
+
+  // Exit admin back to public home
+  const exitAdmin = useCallback(() => {
+    if (typeof window !== 'undefined') {
+      if (window.location.hash === '#admin' || window.location.hash.startsWith('#admin') || window.location.hash.startsWith('#/admin')) {
+        window.location.hash = '';
+      }
+      if (window.location.pathname.startsWith('/admin')) {
+        window.history.pushState({}, '', '/');
+      }
+      setIsAdminRoute(false);
+    }
+  }, []);
+
   useEffect(() => {
     checkRoute();
     checkAdminAuth();
@@ -110,22 +163,28 @@ export default function App() {
         (e.altKey && (e.key === 'a' || e.key === 'A'))
       ) {
         e.preventDefault();
-        navigateTo('/admin');
+        navigateToAdmin();
       }
+    };
+
+    const handleCustomOpenAdmin = () => {
+      navigateToAdmin();
     };
 
     window.addEventListener('popstate', handlePopState);
     window.addEventListener('hashchange', handlePopState);
     window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('haikai:openAdmin', handleCustomOpenAdmin);
 
     return () => {
       window.removeEventListener('popstate', handlePopState);
       window.removeEventListener('hashchange', handlePopState);
       window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('haikai:openAdmin', handleCustomOpenAdmin);
     };
-  }, [checkRoute, checkAdminAuth, loadContent]);
+  }, [checkRoute, checkAdminAuth, loadContent, navigateToAdmin]);
 
-  // Navigate to admin
+  // Navigate to path
   const navigateTo = (path: string) => {
     if (typeof window !== 'undefined') {
       window.history.pushState({}, '', path);
@@ -136,30 +195,38 @@ export default function App() {
   // If on /admin route and authenticated: render CMS dashboard
   if (isAdminRoute && isAdminAuthenticated && !isPreviewMode) {
     return (
-      <AdminDashboard
-        onLogout={() => {
-          setIsAdminAuthenticated(false);
-          navigateTo('/');
-        }}
-        onPreviewSite={() => {
-          setIsPreviewMode(true);
-          loadContent();
-        }}
-        onExitAdmin={() => navigateTo('/')}
-      />
+      <ErrorBoundary fallbackTitle="HAIKAI OWNER CMS RECOVERY" onReset={checkAdminAuth}>
+        <AdminDashboard
+          onLogout={async () => {
+            try {
+              await adminFetch('/api/admin/logout', { method: 'POST' });
+            } catch {}
+            clearAdminToken();
+            setIsAdminAuthenticated(false);
+            exitAdmin();
+          }}
+          onPreviewSite={() => {
+            setIsPreviewMode(true);
+            loadContent();
+          }}
+          onExitAdmin={exitAdmin}
+        />
+      </ErrorBoundary>
     );
   }
 
   // If on /admin route and unauthenticated: render secure Login
   if (isAdminRoute && !isAdminAuthenticated) {
     return (
-      <AdminLogin
-        onLoginSuccess={() => {
-          setIsAdminAuthenticated(true);
-          checkAdminAuth();
-        }}
-        onCancel={() => navigateTo('/')}
-      />
+      <ErrorBoundary fallbackTitle="HAIKAI GATEWAY RECOVERY">
+        <AdminLogin
+          onLoginSuccess={() => {
+            setIsAdminAuthenticated(true);
+            checkAdminAuth();
+          }}
+          onCancel={exitAdmin}
+        />
+      </ErrorBoundary>
     );
   }
 
@@ -224,6 +291,7 @@ export default function App() {
       {/* Top Bar Navigation */}
       <Navigation
         onOpenSpoilerModal={() => setSpoilerModalOpen(true)}
+        onOpenAdmin={navigateToAdmin}
         visibleSections={visible}
       />
 
@@ -262,8 +330,13 @@ export default function App() {
         {/* 11. Mystery Archive (Classified Files) */}
         {visible.mysteries !== false && <MysteryArchive mysteries={dynamicContent.mysteries} />}
 
-        {/* 12. Manga Release (Major Landmark) */}
-        {visible.manga !== false && <MangaSection release={dynamicContent.mangaRelease} />}
+        {/* 12. Manga Release & Multi-Countdown Landmark */}
+        {visible.manga !== false && (
+          <MangaSection
+            release={dynamicContent.mangaRelease}
+            countdowns={dynamicContent.countdowns}
+          />
+        )}
 
         {/* 13. War Records (Censorship & Historical Fragments) */}
         {visible.warRecords !== false && <WarRecords />}
@@ -281,6 +354,7 @@ export default function App() {
       {/* Official Anime Production Archive Footer */}
       <Footer
         settings={dynamicContent.settings}
+        onOpenAdminLogin={navigateToAdmin}
       />
 
       {/* Deep Lore Spoiler Access Modal */}

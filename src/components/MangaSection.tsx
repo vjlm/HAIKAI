@@ -7,24 +7,51 @@ import { FlipCard } from './FlipCard';
 
 interface MangaSectionProps {
   release?: MangaRelease;
+  countdowns?: MangaRelease[];
   onShareExcerpt?: (text: string, title: string) => void;
 }
 
-export const MangaSection: React.FC<MangaSectionProps> = ({ release: propRelease, onShareExcerpt }) => {
+export const MangaSection: React.FC<MangaSectionProps> = ({
+  release: propRelease,
+  countdowns,
+  onShareExcerpt,
+}) => {
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
   const [shareCopied, setShareCopied] = useState(false);
   const [imageError, setImageError] = useState(false);
 
-  const [currentRelease, setCurrentRelease] = useState<MangaRelease>(
-    propRelease || DEFAULT_MANGA_RELEASE
-  );
+  // Available countdown items
+  const availableItems = countdowns && countdowns.length > 0
+    ? countdowns
+    : propRelease
+    ? [propRelease]
+    : [DEFAULT_MANGA_RELEASE];
+
+  const [activeItemId, setActiveItemId] = useState<string>(() => {
+    const featured = availableItems.find((c) => c.isFeatured);
+    return featured ? featured.id : availableItems[0]?.id || '';
+  });
+
+  // Keep active item in sync when countdowns change
+  useEffect(() => {
+    if (availableItems.length > 0) {
+      const exists = availableItems.some((c) => c.id === activeItemId);
+      if (!exists) {
+        const featured = availableItems.find((c) => c.isFeatured);
+        setActiveItemId(featured ? featured.id : availableItems[0].id);
+      }
+    }
+  }, [availableItems, activeItemId]);
+
+  const activeRelease =
+    availableItems.find((c) => c.id === activeItemId) || propRelease || DEFAULT_MANGA_RELEASE;
+
+  const [currentRelease, setCurrentRelease] = useState<MangaRelease>(activeRelease);
 
   useEffect(() => {
-    if (propRelease) {
-      setCurrentRelease(propRelease);
-      setImageError(false);
-    }
-  }, [propRelease]);
+    setCurrentRelease(activeRelease);
+    setImageError(false);
+  }, [activeRelease]);
 
   const release = currentRelease;
 
@@ -205,6 +232,35 @@ export const MangaSection: React.FC<MangaSectionProps> = ({ release: propRelease
           </p>
           <div className="w-16 h-[1px] bg-[#9e2a2b] mt-6" />
         </div>
+
+        {/* Multi-Countdown / Volume Switcher */}
+        {availableItems.length > 1 && (
+          <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mb-8">
+            {availableItems.map((item) => {
+              const isSelected = item.id === activeItemId;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => setActiveItemId(item.id)}
+                  type="button"
+                  className={`px-4 py-2 border text-xs font-cinzel tracking-wider uppercase transition-all flex items-center gap-2 ${
+                    isSelected
+                      ? 'border-[#9e2a2b] bg-[#1a080b] text-[#f2afb2] shadow-[0_0_15px_rgba(158,42,43,0.3)] font-semibold'
+                      : 'border-[#1b232e] bg-[#07090e] text-[#7d8b9c] hover:border-[#384658] hover:text-white'
+                  }`}
+                >
+                  <span>{item.volumeNumber || item.title}</span>
+                  {item.category && item.category !== 'Manga' && (
+                    <span className="text-[10px] font-editorial-mono text-[#9e2a2b]">({item.category})</span>
+                  )}
+                  {item.isFeatured && (
+                    <span className="text-amber-400 text-xs" title="Featured Countdown">★</span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        )}
 
         {/* Central Release Showcase Landmark */}
         <div className="border border-[#263140] bg-[#070a0f] p-8 sm:p-12 lg:p-16 shadow-[0_20px_50px_rgba(0,0,0,0.85)] relative">
